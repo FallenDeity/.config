@@ -1,15 +1,10 @@
 # PowerShell Profile - Central Configuration
 # Centrally managed for multi-machine consistency
 
-$ConfigRoot = if ($env:DOTFILES_CONFIG_ROOT -and (Test-Path $env:DOTFILES_CONFIG_ROOT)) {
-    $env:DOTFILES_CONFIG_ROOT
-}
-elseif (Test-Path (Join-Path $HOME '.config')) {
-    Join-Path $HOME '.config'
-}
-else {
-    Split-Path -Parent (Split-Path -Parent $PSCommandPath)
-}
+$ConfigRoot = Split-Path -Parent $PSScriptRoot
+
+Write-Host "Loading PowerShell profile from: $ConfigRoot" -ForegroundColor Cyan
+
 $OhMyPoshTheme = Join-Path $ConfigRoot 'oh-my-posh\themes\night-owl.omp.json'
 
 # ============ Modules ============
@@ -18,8 +13,7 @@ $requiredModules = @(
     'PSReadLine',
     'ZLocation',
     'PsFzf',
-    'PSTools',
-    'TabExpansionPlusPlus'
+    'PSTools'
 )
 
 foreach ($module in $requiredModules) {

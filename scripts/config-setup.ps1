@@ -159,13 +159,38 @@ function Install-PowerShellProfile {
         return
     }
     
-    # Ensure default PowerShell profile directory exists
-    $ProfileDir = Split-Path -Parent $PROFILE
-    Ensure-Directory -Path $ProfileDir
-    
-    # Copy profile to standard location
-    Copy-Item -Path $RepoProfileScript -Destination $PROFILE -Force
-    Write-Host "PowerShell profile updated: $PROFILE" -ForegroundColor Green
+    $repoConfigRoot = Split-Path -Parent $ScriptsRoot
+    $repoProfilePath = Join-Path $repoConfigRoot 'PowerShell\profile.ps1'
+
+    $bootstrap = @"
+`$RepoProfile = '$($repoProfilePath.Replace("'", "''"))'
+if (Test-Path `$RepoProfile) {
+    . `$RepoProfile
+}
+else {
+    Write-Host "Repo profile not found: `$RepoProfile" -ForegroundColor Yellow
+}
+"@
+
+    $profileTargets = @(
+        $PROFILE.CurrentUserCurrentHost,
+        $PROFILE.CurrentUserAllHosts
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+
+    if (-not $profileTargets -or $profileTargets.Count -eq 0) {
+        $documentsPath = [Environment]::GetFolderPath('MyDocuments')
+        $profileTargets = @(
+            (Join-Path $documentsPath 'PowerShell\Microsoft.PowerShell_profile.ps1'),
+            (Join-Path $documentsPath 'PowerShell\profile.ps1')
+        ) | Select-Object -Unique
+    }
+
+    foreach ($target in $profileTargets) {
+        $profileDir = Split-Path -Parent $target
+        Ensure-Directory -Path $profileDir
+        Set-Content -Path $target -Value $bootstrap -Encoding UTF8
+        Write-Host "PowerShell profile bootstrap updated: $target" -ForegroundColor Green
+    }
 }
 
 function Install-ClinkSetup {
@@ -442,9 +467,7 @@ else {
 Install-PowerShellProfile
 
 $repoConfigRoot = Split-Path -Parent $ScriptsRoot
-[Environment]::SetEnvironmentVariable('DOTFILES_CONFIG_ROOT', $repoConfigRoot, 'User')
-$env:DOTFILES_CONFIG_ROOT = $repoConfigRoot
-Write-Host "DOTFILES_CONFIG_ROOT set (User): $repoConfigRoot" -ForegroundColor Green
+Write-Host "Config root: $repoConfigRoot" -ForegroundColor DarkGreen
 
 $repoBatConfig = Join-Path (Split-Path -Parent $ScriptsRoot) 'bat\config'
 if (Test-Path $repoBatConfig) {

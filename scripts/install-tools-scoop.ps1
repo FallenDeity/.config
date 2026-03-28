@@ -194,7 +194,6 @@ $psModules = @(
     'ZLocation'
     'PsFzf'
     'PSTools'
-    'TabExpansionPlusPlus'
 )
 
 foreach ($moduleName in $psModules) {
