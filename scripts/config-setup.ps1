@@ -22,7 +22,9 @@ $PluginRepos = @(
     'https://github.com/8LWXpg/PowerToysRun-ProcessKiller',
     'https://github.com/Quriz/PowerToysRunScoop',
     'https://github.com/dandn9/prun-lorem',
-    'https://github.com/bostrot/PowerToysRunPluginWinget'
+    'https://github.com/bostrot/PowerToysRunPluginWinget',
+    'https://github.com/Advaith3600/PowerToys-Run-Currency-Converter',
+    'https://github.com/lin-ycv/EverythingPowerToys'
 )
 
 function Write-Step {
