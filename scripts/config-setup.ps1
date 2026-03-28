@@ -249,8 +249,13 @@ function Ensure-WSLInstalled {
 
     try {
         $installedDistros = @(& wsl --list --quiet 2>$null | ForEach-Object { $_.Trim() } | Where-Object { $_ })
-        if ($installedDistros -contains $PreferredWslDistro) {
+        if ($installedDistros | Where-Object { $_ -ieq $PreferredWslDistro }) {
             Write-Host "WSL distro already installed: $PreferredWslDistro" -ForegroundColor DarkGreen
+            return
+        }
+
+        if ($installedDistros.Count -gt 0) {
+            Write-Host ("WSL distro(s) already present: {0}. Skipping install of preferred distro '{1}'." -f ($installedDistros -join ', '), $PreferredWslDistro) -ForegroundColor DarkGreen
             return
         }
 
