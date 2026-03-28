@@ -1,5 +1,9 @@
 $ErrorActionPreference = 'Stop'
 
+param(
+    [switch]$ConfigOnly
+)
+
 $ScriptsRoot = Split-Path -Parent $PSCommandPath
 
 $PluginArchitecture = if ($env:PROCESSOR_ARCHITECTURE -match 'ARM64') { 'arm64' } else { 'x64' }
@@ -365,7 +369,12 @@ function Install-PowerToysPluginsFromGitHub {
 }
 
 Write-Step 'Setting up PowerShell and cmd shell'
-Install-OhMyPoshFonts
+if (-not $ConfigOnly) {
+    Install-OhMyPoshFonts
+}
+else {
+    Write-Host 'Config-only mode: skipping Oh My Posh font install.' -ForegroundColor DarkGreen
+}
 Install-PowerShellProfile
 
 $repoConfigRoot = Split-Path -Parent $ScriptsRoot
@@ -445,7 +454,12 @@ else {
 # Write-Host "DIRENV_CONFIG set (User): $direnvConfigDir" -ForegroundColor Green
 
 Install-ClinkSetup
-Ensure-WSLInstalled
+if (-not $ConfigOnly) {
+    Ensure-WSLInstalled
+}
+else {
+    Write-Host 'Config-only mode: skipping WSL install checks.' -ForegroundColor DarkGreen
+}
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
 
@@ -460,7 +474,10 @@ else {
 }
 
 Write-Step 'Setting up language toolchains'
-if (Test-Path $LanguageSetupScript) {
+if ($ConfigOnly) {
+    Write-Host 'Config-only mode: skipping language toolchain install.' -ForegroundColor DarkGreen
+}
+elseif (Test-Path $LanguageSetupScript) {
     & $LanguageSetupScript
 }
 else {
@@ -472,7 +489,12 @@ Write-Step 'Setting up PowerToys Run plugins from GitHub releases'
 Write-Step "Plugin architecture: $PluginArchitecture"
 Write-Step "Plugins root: $PluginsRoot"
 
-Install-PowerToysPluginsFromGitHub -Repos $PluginRepos -Architecture $PluginArchitecture -PluginsDestination $PluginsRoot -DownloadCache $PluginDownloadCache
+if ($ConfigOnly) {
+    Write-Host 'Config-only mode: skipping PowerToys plugin install.' -ForegroundColor DarkGreen
+}
+else {
+    Install-PowerToysPluginsFromGitHub -Repos $PluginRepos -Architecture $PluginArchitecture -PluginsDestination $PluginsRoot -DownloadCache $PluginDownloadCache
+}
 
 Write-Step 'PowerToys Run plugin setup complete.'
 Write-Step 'All configuration setup complete.'

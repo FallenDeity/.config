@@ -11,7 +11,7 @@ if errorlevel 1 set "PS_CMD=powershell"
 
 echo.
 echo ==> Running setup.ps1
-"%PS_CMD%" -NoProfile -ExecutionPolicy Bypass -File "%SETUP_SCRIPT%"
+"%PS_CMD%" -NoProfile -ExecutionPolicy Bypass -File "%SETUP_SCRIPT%" %*
 if errorlevel 1 goto :fail
 
 echo.
