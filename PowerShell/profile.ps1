@@ -1,7 +1,15 @@
 # PowerShell Profile - Central Configuration
 # Centrally managed for multi-machine consistency
 
-$ConfigRoot = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
+$ConfigRoot = if ($env:DOTFILES_CONFIG_ROOT -and (Test-Path $env:DOTFILES_CONFIG_ROOT)) {
+    $env:DOTFILES_CONFIG_ROOT
+}
+elseif (Test-Path (Join-Path $HOME '.config')) {
+    Join-Path $HOME '.config'
+}
+else {
+    Split-Path -Parent (Split-Path -Parent $PSCommandPath)
+}
 $OhMyPoshTheme = Join-Path $ConfigRoot 'oh-my-posh\themes\night-owl.omp.json'
 
 # ============ Modules ============
@@ -16,8 +24,12 @@ $requiredModules = @(
 
 foreach ($module in $requiredModules) {
     if (-not (Get-Module -Name $module -ErrorAction SilentlyContinue)) {
-        Write-Host "Module not found, attempting to import: $module" -ForegroundColor Yellow
-        Import-Module $module -ErrorAction SilentlyContinue
+        if (Get-Module -Name $module -ListAvailable -ErrorAction SilentlyContinue) {
+            Import-Module $module -ErrorAction SilentlyContinue
+        }
+        else {
+            Write-Host "Module not installed: $module" -ForegroundColor Yellow
+        }
     }
 }
 
@@ -84,9 +96,11 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 }
 
 # GitHub CLI completion
-$ghCompletion = gh completion -s powershell 2>$null
-if ($ghCompletion) {
-    Invoke-Expression -Command $ghCompletion
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+    $ghCompletion = gh completion -s powershell 2>$null | Out-String
+    if (-not [string]::IsNullOrWhiteSpace($ghCompletion)) {
+        Invoke-Expression -Command $ghCompletion
+    }
 }
 
 # Tailscale completion

@@ -368,6 +368,11 @@ Write-Step 'Setting up PowerShell and cmd shell'
 Install-OhMyPoshFonts
 Install-PowerShellProfile
 
+$repoConfigRoot = Split-Path -Parent $ScriptsRoot
+[Environment]::SetEnvironmentVariable('DOTFILES_CONFIG_ROOT', $repoConfigRoot, 'User')
+$env:DOTFILES_CONFIG_ROOT = $repoConfigRoot
+Write-Host "DOTFILES_CONFIG_ROOT set (User): $repoConfigRoot" -ForegroundColor Green
+
 $repoBatConfig = Join-Path (Split-Path -Parent $ScriptsRoot) 'bat\config'
 if (Test-Path $repoBatConfig) {
     [Environment]::SetEnvironmentVariable('BAT_CONFIG_PATH', $repoBatConfig, 'User')
