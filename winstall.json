@@ -237,6 +237,10 @@
           "Version": "2.52.0"
         },
         {
+          "PackageIdentifier": "GitHub.Copilot",
+          "Version": "v1.0.12"
+        },
+        {
           "PackageIdentifier": "voidtools.Everything",
           "Version": "1.4.1.1030"
         },

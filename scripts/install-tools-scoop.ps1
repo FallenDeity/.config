@@ -57,7 +57,6 @@ function Ensure-ScoopPackages {
 
 function Ensure-GhExtensions {
     $requiredExtensions = @(
-        'github/gh-copilot',
         'dlvhdr/gh-dash'
     )
 
@@ -80,6 +79,15 @@ function Ensure-GhExtensions {
             gh extension install $ext
         }
     }
+
+    $copilotVersion = gh copilot --version 2>$null | Out-String
+    if (-not [string]::IsNullOrWhiteSpace($copilotVersion)) {
+        Write-Host ("GitHub Copilot CLI ready: {0}" -f ($copilotVersion.Trim())) -ForegroundColor DarkGreen
+    }
+    else {
+        Write-Host 'GitHub Copilot CLI not ready yet. Ensure GitHub.Copilot is installed and run `gh copilot -- --help` once.' -ForegroundColor Yellow
+    }
+
 }
 
 function Ensure-UvAndTools {

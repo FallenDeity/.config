@@ -105,7 +105,12 @@ function explain {
         [Parameter(Position = 0, ValueFromRemainingArguments = $true)]
         [string]$text
     )
-    gh copilot explain $text
+    if ([string]::IsNullOrWhiteSpace($text)) {
+        Write-Host 'Usage: explain <text>' -ForegroundColor Yellow
+        return
+    }
+
+    gh copilot -p "explain $text"
 }
 
 function custom-ls {
