@@ -198,9 +198,9 @@ $psModules = @(
 )
 
 foreach ($moduleName in $psModules) {
-    if (-not (Get-Module -Name $moduleName -ListAvailable -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Module -Name $moduleName -ListAvailable)) {
         Write-Host "Installing module: $moduleName"
-        Install-Module -Name $moduleName -Repository PSGallery -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+        Install-Module -Name $moduleName -Repository PSGallery -Scope CurrentUser -Force -AllowClobber
     }
     else {
         Write-Host "Module already installed: $moduleName" -ForegroundColor DarkGreen

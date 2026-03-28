@@ -23,9 +23,9 @@ $requiredModules = @(
 )
 
 foreach ($module in $requiredModules) {
-    if (-not (Get-Module -Name $module -ErrorAction SilentlyContinue)) {
-        if (Get-Module -Name $module -ListAvailable -ErrorAction SilentlyContinue) {
-            Import-Module $module -ErrorAction SilentlyContinue
+    if (-not (Get-Module -Name $module)) {
+        if (Get-Module -Name $module -ListAvailable) {
+            Import-Module $module
         }
         else {
             Write-Host "Module not installed: $module" -ForegroundColor Yellow
@@ -63,9 +63,6 @@ if (Test-Path $OhMyPoshTheme) {
 else {
     Write-Host "Oh-my-posh theme not found at: $OhMyPoshTheme" -ForegroundColor Yellow
 }
-
-# ============ Terminal Icons ============
-Import-Module Terminal-Icons -ErrorAction SilentlyContinue
 
 # ============ Environment Setup ============
 $env:VIRTUAL_ENV_DISABLE_PROMPT = 1
