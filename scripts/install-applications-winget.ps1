@@ -36,11 +36,11 @@ function Import-WingetPackages {
     Write-Step 'Importing packages from winget export'
 
     if (-not $PinVersions) {
-        winget import --import-file $Path --accept-package-agreements --accept-source-agreements --ignore-versions
+        winget import --import-file $Path --accept-package-agreements --accept-source-agreements --ignore-versions  --disable-interactivity
         return
     }
 
-    winget import --import-file $Path --accept-package-agreements --accept-source-agreements
+    winget import --import-file $Path --accept-package-agreements --accept-source-agreements  --disable-interactivity
 }
 
 Write-Step 'Phase 0: Winget bootstrap'

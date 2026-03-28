@@ -212,7 +212,7 @@ function Install-OhMyPoshFonts {
             Write-Host "Font ensured: $font" -ForegroundColor Green
         }
         catch {
-            Write-Host "Failed to install font $font: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host "Failed to install font ${font}: $($_.Exception.Message)" -ForegroundColor Yellow
         }
     }
 }
@@ -259,7 +259,7 @@ function Ensure-WSLInstalled {
         Write-Host "WSL distro install command executed: $PreferredWslDistro" -ForegroundColor Green
     }
     catch {
-        Write-Host "Failed to install WSL distro $PreferredWslDistro: $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "Failed to install WSL distro ${PreferredWslDistro}: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
