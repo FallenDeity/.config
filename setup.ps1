@@ -1,8 +1,8 @@
-$ErrorActionPreference = 'Stop'
-
 param(
     [switch]$ConfigOnly
 )
+
+$ErrorActionPreference = 'Stop'
 
 $Root = Split-Path -Parent $PSCommandPath
 $WingetScript = Join-Path $Root 'scripts\install-applications-winget.ps1'

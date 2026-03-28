@@ -1,8 +1,8 @@
-$ErrorActionPreference = 'Stop'
-
 param(
     [switch]$ConfigOnly
 )
+
+$ErrorActionPreference = 'Stop'
 
 $ScriptsRoot = Split-Path -Parent $PSCommandPath
 
