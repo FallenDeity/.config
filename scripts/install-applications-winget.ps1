@@ -90,10 +90,7 @@ function Install-WingetPackages {
                 '--verbose-logs'
             )
 
-            if (-not $PinVersions) {
-                $arguments += '--ignore-versions'
-            }
-            elseif ($packageVersion) {
+            if ($PinVersions -and $packageVersion) {
                 $arguments += @('--version', $packageVersion)
             }
 
