@@ -368,6 +368,70 @@ function Install-PowerToysPluginsFromGitHub {
     }
 }
 
+function Stop-PowerToysForPluginInstall {
+    $running = @(Get-Process -Name 'PowerToys' -ErrorAction SilentlyContinue)
+    if (-not $running -or $running.Count -eq 0) {
+        return @{ WasRunning = $false; ExecutablePath = $null }
+    }
+
+    $executablePath = $null
+    foreach ($proc in $running) {
+        if ($proc.Path) {
+            $executablePath = $proc.Path
+            break
+        }
+    }
+
+    if (-not $executablePath) {
+        $knownPaths = @(
+            (Join-Path $env:ProgramFiles 'PowerToys\PowerToys.exe'),
+            (Join-Path $env:LOCALAPPDATA 'PowerToys\PowerToys.exe')
+        )
+        foreach ($path in $knownPaths) {
+            if (Test-Path $path) {
+                $executablePath = $path
+                break
+            }
+        }
+    }
+
+    Write-Host 'PowerToys is running. Stopping it before plugin update...' -ForegroundColor Yellow
+    $running | Stop-Process -Force
+    Start-Sleep -Seconds 2
+
+    return @{ WasRunning = $true; ExecutablePath = $executablePath }
+}
+
+function Start-PowerToysAfterPluginInstall {
+    param([hashtable]$State)
+
+    if (-not $State -or -not $State.WasRunning) {
+        return
+    }
+
+    $executablePath = $State.ExecutablePath
+    if (-not $executablePath -or -not (Test-Path $executablePath)) {
+        $knownPaths = @(
+            (Join-Path $env:ProgramFiles 'PowerToys\PowerToys.exe'),
+            (Join-Path $env:LOCALAPPDATA 'PowerToys\PowerToys.exe')
+        )
+        foreach ($path in $knownPaths) {
+            if (Test-Path $path) {
+                $executablePath = $path
+                break
+            }
+        }
+    }
+
+    if ($executablePath -and (Test-Path $executablePath)) {
+        Start-Process -FilePath $executablePath
+        Write-Host 'PowerToys restarted after plugin update.' -ForegroundColor Green
+    }
+    else {
+        Write-Host 'PowerToys was stopped, but executable was not found for auto-restart.' -ForegroundColor Yellow
+    }
+}
+
 Write-Step 'Setting up PowerShell and cmd shell'
 if (-not $ConfigOnly) {
     Install-OhMyPoshFonts
@@ -493,7 +557,13 @@ if ($ConfigOnly) {
     Write-Host 'Config-only mode: skipping PowerToys plugin install.' -ForegroundColor DarkGreen
 }
 else {
-    Install-PowerToysPluginsFromGitHub -Repos $PluginRepos -Architecture $PluginArchitecture -PluginsDestination $PluginsRoot -DownloadCache $PluginDownloadCache
+    $powerToysState = Stop-PowerToysForPluginInstall
+    try {
+        Install-PowerToysPluginsFromGitHub -Repos $PluginRepos -Architecture $PluginArchitecture -PluginsDestination $PluginsRoot -DownloadCache $PluginDownloadCache
+    }
+    finally {
+        Start-PowerToysAfterPluginInstall -State $powerToysState
+    }
 }
 
 Write-Step 'PowerToys Run plugin setup complete.'
