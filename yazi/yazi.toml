@@ -1,0 +1,18 @@
+# Defaults are inherited from Yazi shipped presets.
+
+[mgr]
+show_hidden = true
+show_symlink = true
+sort_dir_first = true
+scrolloff = 8
+title_format = "Yazi: {cwd}"
+
+[preview]
+tab_size = 4
+wrap = "yes"
+
+[opener]
+edit = [
+	{ run = "code -w %s", desc = "code (block)", for = "windows", block = true },
+	{ run = "code %s", desc = "code", for = "windows", orphan = true },
+]

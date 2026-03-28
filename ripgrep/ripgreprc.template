@@ -1,0 +1,17 @@
+# ripgrep defaults (generated to $HOME/.ripgreprc by config-setup.ps1)
+# Keep one CLI argument per line.
+
+--colors=column:fg:cyan
+--colors=line:fg:blue
+--colors=match:style:bold
+--colors=match:bg:yellow
+--colors=match:fg:black
+--colors=path:fg:magenta
+--hidden
+--ignore-file=__RIPGREP_IGNORE_FILE__
+--smart-case
+--sort=path
+
+# Developer-friendly extras
+--max-columns=220
+--max-columns-preview

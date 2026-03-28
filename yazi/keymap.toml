@@ -1,0 +1,7 @@
+# Keep Yazi default keymap for now.
+# Add only append/prepend custom keys when needed.
+
+[mgr]
+# append_keymap = [
+#   { on = [ "g", "r" ], run = "cd ~/.config", desc = "Go to config" },
+# ]
