@@ -172,24 +172,25 @@ else {
 }
 "@
 
-    $profileTargets = @(
-        $PROFILE.CurrentUserCurrentHost,
-        $PROFILE.CurrentUserAllHosts
-    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+    $primaryTarget = $PROFILE.CurrentUserCurrentHost
+    $secondaryTarget = $PROFILE.CurrentUserAllHosts
 
-    if (-not $profileTargets -or $profileTargets.Count -eq 0) {
+    if ([string]::IsNullOrWhiteSpace($primaryTarget)) {
         $documentsPath = [Environment]::GetFolderPath('MyDocuments')
-        $profileTargets = @(
-            (Join-Path $documentsPath 'PowerShell\Microsoft.PowerShell_profile.ps1'),
-            (Join-Path $documentsPath 'PowerShell\profile.ps1')
-        ) | Select-Object -Unique
+        $primaryTarget = Join-Path $documentsPath 'PowerShell\Microsoft.PowerShell_profile.ps1'
     }
 
-    foreach ($target in $profileTargets) {
-        $profileDir = Split-Path -Parent $target
-        Ensure-Directory -Path $profileDir
-        Set-Content -Path $target -Value $bootstrap -Encoding UTF8
-        Write-Host "PowerShell profile bootstrap updated: $target" -ForegroundColor Green
+    $profileDir = Split-Path -Parent $primaryTarget
+    Ensure-Directory -Path $profileDir
+    Set-Content -Path $primaryTarget -Value $bootstrap -Encoding UTF8
+    Write-Host "PowerShell profile bootstrap updated: $primaryTarget" -ForegroundColor Green
+
+    if (-not [string]::IsNullOrWhiteSpace($secondaryTarget) -and ($secondaryTarget -ne $primaryTarget) -and (Test-Path $secondaryTarget)) {
+        $secondaryContent = Get-Content -Path $secondaryTarget -Raw
+        if ($secondaryContent -match [regex]::Escape($repoProfilePath)) {
+            Set-Content -Path $secondaryTarget -Value '# Disabled by config-setup: use CurrentUserCurrentHost profile bootstrap only.' -Encoding UTF8
+            Write-Host "Disabled duplicate profile bootstrap: $secondaryTarget" -ForegroundColor DarkGreen
+        }
     }
 }
 

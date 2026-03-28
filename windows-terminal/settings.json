@@ -63,7 +63,9 @@
         "guid": "{2ece5bfe-50ed-5f3a-ab87-5cd4baafed2b}",
         "hidden": false,
         "name": "Git Bash",
-        "source": "Git"
+        "icon": "ms-appdata:///roaming/icons/git-bash.png",
+        "commandline": "%ProgramFiles%\\Git\\bin\\bash.exe --login -i",
+        "startingDirectory": "%USERPROFILE%"
       },
       {
         "guid": "{f5f522f0-9f95-4c0f-b5ce-96a36c4fca6f}",
@@ -76,9 +78,9 @@
       {
         "guid": "{f0a87480-7e4f-4f6c-9fd0-c9ce9aee0b28}",
         "hidden": false,
-        "name": "Ubuntu",
+        "name": "Ubuntu (Default)",
         "icon": "ms-appdata:///roaming/icons/ubuntu.png",
-        "commandline": "wsl.exe -d Ubuntu ~",
+        "commandline": "wsl.exe ~",
         "startingDirectory": "%USERPROFILE%"
       }
     ]
