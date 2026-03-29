@@ -557,7 +557,15 @@ $repoLazygitDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'lazygit'
 $homeLazygitDir = Join-Path $HOME '.config\lazygit'
 if (Test-Path $repoLazygitDir) {
     Ensure-Directory -Path $homeLazygitDir
-    Copy-Item -Path (Join-Path $repoLazygitDir '*') -Destination $homeLazygitDir -Recurse -Force
+
+    $repoLazygitFullPath = [System.IO.Path]::GetFullPath($repoLazygitDir)
+    $homeLazygitFullPath = [System.IO.Path]::GetFullPath($homeLazygitDir)
+    if ($repoLazygitFullPath -ieq $homeLazygitFullPath) {
+        Write-Host "lazygit source and destination are identical; skipping copy: $homeLazygitFullPath" -ForegroundColor DarkGreen
+    }
+    else {
+        Copy-Item -Path (Join-Path $repoLazygitDir '*') -Destination $homeLazygitDir -Recurse -Force
+    }
 
     $lazygitBaseConfig = Join-Path $homeLazygitDir 'config.yml'
     $lazygitThemeFile = Join-Path $homeLazygitDir 'themes\mocha\blue.yml'
