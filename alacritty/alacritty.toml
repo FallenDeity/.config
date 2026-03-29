@@ -1,0 +1,107 @@
+[general]
+import = [
+    "~/.config/alacritty/themes/catppuccin-mocha.toml",
+]
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+decorations = "None"
+opacity = 0.92
+blur = true
+dynamic_padding = true
+padding = { x = 6, y = 4 }
+
+[font]
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
+size = 11.25
+
+[selection]
+save_to_clipboard = true
+
+[mouse]
+hide_when_typing = true
+bindings = [
+    { mouse = "Right", action = "Paste" },
+    { mouse = "Right", mods = "Shift", action = "PasteSelection" },
+    { mouse = "Middle", action = "Copy" },
+    { mouse = "Left", mods = "Control", action = "ExpandSelection" },
+    { mouse = "Back", action = "ScrollPageUp" },
+    { mouse = "Forward", action = "ScrollPageDown" },
+]
+
+[keyboard]
+bindings = [
+    { key = "B", mods = "Control|Shift", command = { program = "pwsh", args = ["-NoProfile", "-Command", "$q=Get-Clipboard -Raw; if (-not [string]::IsNullOrWhiteSpace($q)) { $u=[uri]::EscapeDataString($q.Trim()); Start-Process \"https://duckduckgo.com/?q=$u\" }"] } },
+]
+
+[hints]
+alphabet = "jfkdls;ahgurieowpq"
+
+[[hints.enabled]]
+hyperlinks = true
+post_processing = true
+persist = false
+command = { program = "cmd", args = ["/c", "start", ""] }
+mouse = { enabled = true }
+binding = { key = "O", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = '(?i)\b([A-Za-z]:\\[^\s:"<>|?*]+|(?:\.{1,2}/|~/|/)[^\s:]+)(?::\d+(?::\d+)?)?\b'
+post_processing = true
+persist = false
+command = { program = "code", args = ["-g"] }
+mouse = { enabled = true }
+binding = { key = "F", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = '(?i)\b([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)#[0-9]+\b'
+post_processing = true
+persist = false
+command = { program = "pwsh", args = ["-NoProfile", "-Command", "$m=$args[-1]; if ($m -match \"^(?<repo>[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)#(?<pr>[0-9]+)$\") { Start-Process \"https://github.com/$($Matches.repo)/pull/$($Matches.pr)\" }"] }
+mouse = { enabled = true }
+binding = { key = "P", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = '(?i)\b[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\b'
+post_processing = true
+persist = false
+command = { program = "pwsh", args = ["-NoProfile", "-Command", "$m=$args[-1]; Start-Process \"https://github.com/$m\""] }
+mouse = { enabled = true }
+binding = { key = "R", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = '(?i)(?<![0-9a-f])#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})(?![0-9a-f])'
+post_processing = false
+persist = true
+action = "Copy"
+mouse = { enabled = true }
+binding = { key = "H", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = '\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b'
+post_processing = false
+persist = true
+action = "Copy"
+mouse = { enabled = true }
+binding = { key = "I", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = '(?i)\b[0-9a-f]{7,40}\b'
+post_processing = false
+persist = true
+action = "Copy"
+mouse = { enabled = true }
+binding = { key = "G", mods = "Control|Shift" }
+
+[[hints.enabled]]
+regex = "(?:\"[^\"\\r\\n]{3,}\"|'[^'\\r\\n]{3,}')"
+post_processing = true
+persist = false
+command = { program = "pwsh", args = ["-NoProfile", "-Command", "$m=$args[-1].Trim().Trim('\"',\"'\"); if (-not [string]::IsNullOrWhiteSpace($m)) { $q=[uri]::EscapeDataString($m); Start-Process \"https://duckduckgo.com/?q=$q\" }"] }
+mouse = { enabled = true }
+binding = { key = "S", mods = "Control|Shift" }

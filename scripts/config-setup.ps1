@@ -86,7 +86,7 @@ function Get-PreferredReleaseAsset {
     }
 
     $archiveAssets = $Assets | Where-Object {
-        $_.name -match '\.(zip|nupkg|7z)$'
+        $_.name -match '\.(zip|nupkg|7z|rar)$'
     }
 
     if (-not $archiveAssets -or $archiveAssets.Count -eq 0) {
@@ -130,6 +130,20 @@ function Expand-PluginArchive {
             return
         }
         throw "7z archive detected but 7z is not installed: $ArchivePath"
+    }
+
+    if ($ArchivePath -match '\.rar$') {
+        if (Get-Command 7z -ErrorAction SilentlyContinue) {
+            & 7z x "$ArchivePath" "-o$DestinationPath" -y | Out-Null
+            return
+        }
+
+        if (Get-Command unrar -ErrorAction SilentlyContinue) {
+            & unrar x -o+ "$ArchivePath" "$DestinationPath\" | Out-Null
+            return
+        }
+
+        throw "rar archive detected but neither 7z nor unrar is installed: $ArchivePath"
     }
 
     throw "Unsupported archive type: $ArchivePath"
@@ -345,6 +359,29 @@ function Install-WindowsTerminalSettings {
     Write-Host "Windows Terminal settings synced: $targetFile" -ForegroundColor Green
 }
 
+function Install-AlacrittyConfig {
+    Write-Step 'Setting up Alacritty config'
+
+    $repoAlacrittyDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'alacritty'
+    if (-not (Test-Path $repoAlacrittyDir)) {
+        Write-Host "Alacritty config directory not found: $repoAlacrittyDir" -ForegroundColor Yellow
+        return
+    }
+
+    $targetDir = Join-Path $env:APPDATA 'alacritty'
+    Ensure-Directory -Path $targetDir
+
+    $targetConfig = Join-Path $targetDir 'alacritty.toml'
+    if (Test-Path $targetConfig) {
+        $backupFile = Join-Path $targetDir ("alacritty.backup.{0}.toml" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        Copy-Item -Path $targetConfig -Destination $backupFile -Force
+        Write-Host "Backed up existing Alacritty config to: $backupFile" -ForegroundColor DarkGreen
+    }
+
+    Copy-Item -Path (Join-Path $repoAlacrittyDir '*') -Destination $targetDir -Recurse -Force
+    Write-Host "Alacritty config synced to: $targetDir" -ForegroundColor Green
+}
+
 function Install-PowerToysPluginsFromGitHub {
     param(
         [string[]]$Repos,
@@ -552,6 +589,7 @@ else {
 }
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
+Install-AlacrittyConfig
 
 Write-Step 'Setting up git config'
 

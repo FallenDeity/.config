@@ -1,7 +1,7 @@
 # Delta-focused Git settings (included from global ~/.gitconfig)
 
 [include]
-    path = $HOME/.config/delta/themes/catppuccin.gitconfig
+    path = ~/.config/delta/themes/catppuccin.gitconfig
 
 [core]
     pager = delta
