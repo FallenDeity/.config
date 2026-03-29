@@ -3,6 +3,10 @@ import = [
     "~/.config/alacritty/themes/catppuccin-mocha.toml",
 ]
 
+[terminal.shell]
+program = "pwsh"
+args = ["-NoLogo", "-WorkingDirectory", "~"]
+
 [env]
 TERM = "xterm-256color"
 
@@ -12,13 +16,14 @@ opacity = 0.92
 blur = true
 dynamic_padding = true
 padding = { x = 6, y = 4 }
+dimensions = { columns = 120, lines = 30 }
 
 [font]
-normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
-bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
-italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
-bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
-size = 11.25
+normal = { family = "MesloLGM Nerd Font", style = "Regular" }
+bold = { family = "MesloLGM Nerd Font", style = "Bold" }
+italic = { family = "MesloLGM Nerd Font", style = "Italic" }
+bold_italic = { family = "MesloLGM Nerd Font", style = "Bold Italic" }
+size = 11
 
 [selection]
 save_to_clipboard = true
@@ -36,13 +41,15 @@ bindings = [
 
 [keyboard]
 bindings = [
-    { key = "B", mods = "Control|Shift", command = { program = "pwsh", args = ["-NoProfile", "-Command", "$q=Get-Clipboard -Raw; if (-not [string]::IsNullOrWhiteSpace($q)) { $u=[uri]::EscapeDataString($q.Trim()); Start-Process \"https://duckduckgo.com/?q=$u\" }"] } },
+    { key = "B", mods = "Control|Super", command = { program = "pwsh", args = ["-NoProfile", "-Command", "$q=Get-Clipboard -Raw; if (-not [string]::IsNullOrWhiteSpace($q)) { $u=[uri]::EscapeDataString($q.Trim()); Start-Process \"https://duckduckgo.com/?q=$u\" }"] } },
 ]
 
 [hints]
 alphabet = "jfkdls;ahgurieowpq"
 
+# URLs with common schemes
 [[hints.enabled]]
+regex ="(ipfs:|ipns:|magnet:|mailto:|gemini://|gopher://|https://|http://|news:|file:|git://|ssh:|ftp://)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`\\\\]+"
 hyperlinks = true
 post_processing = true
 persist = false
@@ -50,58 +57,65 @@ command = { program = "cmd", args = ["/c", "start", ""] }
 mouse = { enabled = true }
 binding = { key = "O", mods = "Control|Shift" }
 
+# File paths with optional line and column numbers
 [[hints.enabled]]
-regex = '(?i)\b([A-Za-z]:\\[^\s:"<>|?*]+|(?:\.{1,2}/|~/|/)[^\s:]+)(?::\d+(?::\d+)?)?\b'
+regex = '(?i)(?-u:\b)(?:[A-Za-z]:\\[^\s:"<>|?*]+|(?:\.{1,2}/|~/|/)[^\s:]+)(?::\d+(?::\d+)?)?(?-u:\b)'
 post_processing = true
 persist = false
-command = { program = "code", args = ["-g"] }
+command = { program = "cmd", args = ["/c", "code", "-g"] }
 mouse = { enabled = true }
-binding = { key = "F", mods = "Control|Shift" }
+binding = { key = "E", mods = "Control|Shift" }
 
+# Hex color codes
 [[hints.enabled]]
-regex = '(?i)\b([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)#[0-9]+\b'
+regex = '(?i)#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})'
 post_processing = true
-persist = false
-command = { program = "pwsh", args = ["-NoProfile", "-Command", "$m=$args[-1]; if ($m -match \"^(?<repo>[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)#(?<pr>[0-9]+)$\") { Start-Process \"https://github.com/$($Matches.repo)/pull/$($Matches.pr)\" }"] }
-mouse = { enabled = true }
-binding = { key = "P", mods = "Control|Shift" }
-
-[[hints.enabled]]
-regex = '(?i)\b[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\b'
-post_processing = true
-persist = false
-command = { program = "pwsh", args = ["-NoProfile", "-Command", "$m=$args[-1]; Start-Process \"https://github.com/$m\""] }
-mouse = { enabled = true }
-binding = { key = "R", mods = "Control|Shift" }
-
-[[hints.enabled]]
-regex = '(?i)(?<![0-9a-f])#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})(?![0-9a-f])'
-post_processing = false
 persist = true
 action = "Copy"
 mouse = { enabled = true }
 binding = { key = "H", mods = "Control|Shift" }
 
+# IPv4 addresses
 [[hints.enabled]]
-regex = '\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b'
+regex = '(?-u:\b)(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?-u:\b)'
 post_processing = false
 persist = true
 action = "Copy"
 mouse = { enabled = true }
 binding = { key = "I", mods = "Control|Shift" }
 
+# Git commit hashes
 [[hints.enabled]]
-regex = '(?i)\b[0-9a-f]{7,40}\b'
+regex = '(?i)(?-u:\b)[0-9a-f]{7,40}(?-u:\b)'
 post_processing = false
 persist = true
 action = "Copy"
 mouse = { enabled = true }
 binding = { key = "G", mods = "Control|Shift" }
 
+# Quoted strings searches on DuckDuckGo
 [[hints.enabled]]
 regex = "(?:\"[^\"\\r\\n]{3,}\"|'[^'\\r\\n]{3,}')"
 post_processing = true
 persist = false
-command = { program = "pwsh", args = ["-NoProfile", "-Command", "$m=$args[-1].Trim().Trim('\"',\"'\"); if (-not [string]::IsNullOrWhiteSpace($m)) { $q=[uri]::EscapeDataString($m); Start-Process \"https://duckduckgo.com/?q=$q\" }"] }
+command = { program = "pwsh", args = ["-NoProfile", "-File", "C:/Users/triya/AppData/Roaming/alacritty/scripts/hint-duckduckgo.ps1"] }
 mouse = { enabled = true }
-binding = { key = "S", mods = "Control|Shift" }
+binding = { key = "Z", mods = "Control|Shift" }
+
+# GitHub PRs owner/repo#123
+[[hints.enabled]]
+regex = '(?i)(?-u:\b)[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+#[0-9]+(?-u:\b)'
+post_processing = true
+persist = false
+command = { program = "pwsh", args = ["-NoProfile", "-File", "C:/Users/triya/AppData/Roaming/alacritty/scripts/hint-github-pr.ps1"] }
+mouse = { enabled = true }
+binding = { key = "P", mods = "Control|Shift" }
+
+# GitHub repos owner/repo
+[[hints.enabled]]
+regex = '(?i)(?-u:\b)[A-Za-z0-9_-]+/[A-Za-z0-9_.-]+(?-u:\b)'
+post_processing = true
+persist = false
+command = { program = "pwsh", args = ["-NoProfile", "-File", "C:/Users/triya/AppData/Roaming/alacritty/scripts/hint-github-repo.ps1"] }
+mouse = { enabled = true }
+binding = { key = "R", mods = "Control|Shift" }
