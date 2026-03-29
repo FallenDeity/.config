@@ -94,6 +94,56 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
     }
 }
 
+# UV completion
+if (Get-Command uv -ErrorAction SilentlyContinue) {
+    uv generate-shell-completion powershell | Out-String | Invoke-Expression
+}
+
+# kubectl (Kubernetes)
+if (Get-Command kubectl -ErrorAction SilentlyContinue) {
+    kubectl completion powershell | Out-String | Invoke-Expression
+}
+
+# just (Command runner)
+if (Get-Command just -ErrorAction SilentlyContinue) {
+    just --completions powershell | Out-String | Invoke-Expression
+}
+
+# rclone (Cloud storage sync)
+if (Get-Command rclone -ErrorAction SilentlyContinue) {
+    rclone completion powershell | Out-String | Invoke-Expression
+}
+
+# Ruff (Python linter/formatter)
+if (Get-Command ruff -ErrorAction SilentlyContinue) {
+    ruff generate-shell-completion powershell | Out-String | Invoke-Expression
+}
+
+# VHS (CLI terminal recording)
+if (Get-Command vhs -ErrorAction SilentlyContinue) {
+    vhs completion powershell | Out-String | Invoke-Expression
+}
+
+# broot (Tree navigator)
+if (Get-Command broot -ErrorAction SilentlyContinue) {
+    broot --print-shell-function powershell | Out-String | Invoke-Expression
+}
+
+# fd (Find)
+if (Get-Command fd -ErrorAction SilentlyContinue) {
+    fd --gen-completions powershell | Out-String | Invoke-Expression
+}
+
+# ripgrep (Search)
+if (Get-Command rg -ErrorAction SilentlyContinue) {
+    rg --generate complete-powershell | Out-String | Invoke-Expression
+}
+
+# delta (Git Pager)
+if (Get-Command delta -ErrorAction SilentlyContinue) {
+    delta --generate-completion powershell | Out-String | Invoke-Expression
+}
+
 # Tailscale completion
 if (Get-Command tailscale -ErrorAction SilentlyContinue) {
     tailscale completion powershell 2>$null | Out-String | Invoke-Expression

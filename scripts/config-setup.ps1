@@ -553,6 +553,29 @@ else {
     Write-Host "yazi config directory not found: $repoYaziConfigDir" -ForegroundColor Yellow
 }
 
+$repoLazygitDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'lazygit'
+$homeLazygitDir = Join-Path $HOME '.config\lazygit'
+if (Test-Path $repoLazygitDir) {
+    Ensure-Directory -Path $homeLazygitDir
+    Copy-Item -Path (Join-Path $repoLazygitDir '*') -Destination $homeLazygitDir -Recurse -Force
+
+    $lazygitBaseConfig = Join-Path $homeLazygitDir 'config.yml'
+    $lazygitThemeFile = Join-Path $homeLazygitDir 'themes\mocha\blue.yml'
+
+    if ((Test-Path $lazygitBaseConfig) -and (Test-Path $lazygitThemeFile)) {
+        $lgConfigValue = "{0},{1}" -f ($lazygitBaseConfig.Replace('\', '/')), ($lazygitThemeFile.Replace('\', '/'))
+        [Environment]::SetEnvironmentVariable('LG_CONFIG_FILE', $lgConfigValue, 'User')
+        $env:LG_CONFIG_FILE = $lgConfigValue
+        Write-Host "LG_CONFIG_FILE set (User): $lgConfigValue" -ForegroundColor Green
+    }
+    else {
+        Write-Host "lazygit config/theme missing under: $homeLazygitDir" -ForegroundColor Yellow
+    }
+}
+else {
+    Write-Host "lazygit config directory not found: $repoLazygitDir" -ForegroundColor Yellow
+}
+
 $repoRipgrepDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'ripgrep'
 $repoRipgrepTemplate = Join-Path $repoRipgrepDir 'ripgreprc.template'
 $repoRipgrepIgnore = Join-Path $repoRipgrepDir 'ignore'

@@ -1,0 +1,41 @@
+gui:
+  nerdFontsVersion: "3"
+  filterMode: fuzzy
+  showNumstatInFilesView: true
+  theme:
+    selectedLineBgColor:
+      - reverse
+
+git:
+  disableForcePushing: true
+  autoForwardBranches: allBranches
+  truncateCopiedCommitHashesTo: 40
+  pagers:
+    - colorArg: always
+      pager: "delta --dark --paging=never --tabs=4"
+
+os:
+  editPreset: vscode
+
+customCommands:
+  - key: "<c-g>"
+    context: global
+    command: "gh pr create --fill --web"
+    loadingText: "Creating pull request on GitHub"
+    output: terminal
+  - key: "<c-r>"
+    context: commits
+    command: 'git rebase --interactive "{{.SelectedCommit.Sha}}"'
+    output: terminal
+
+notARepository: skip
+disableStartupPopups: true
+quitOnTopLevelReturn: true
+
+update:
+  method: background
+  days: 30
+
+refresher:
+  refreshInterval: 10
+  fetchInterval: 600
