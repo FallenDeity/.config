@@ -342,8 +342,20 @@ Initialize-GitSubmodules
 $repoConfigRoot = Split-Path -Parent $ScriptsRoot
 Write-Host "Config root: $repoConfigRoot" -ForegroundColor DarkGreen
 
+$repoPsmuxConfig = Join-Path $repoConfigRoot 'psmux\psmux.conf'
+$userPsmuxDir = Join-Path $HOME '.config\psmux'
+$userPsmuxConfig = Join-Path $userPsmuxDir 'psmux.conf'
+Ensure-Directory -Path $userPsmuxDir
+if (Test-Path $repoPsmuxConfig) {
+    Copy-Item -Path $repoPsmuxConfig -Destination $userPsmuxConfig -Force
+    Write-Host "PSMUX config rendered to: $userPsmuxConfig" -ForegroundColor Green
+}
+else {
+    Write-Host "psmux config template not found: $repoPsmuxConfig" -ForegroundColor Yellow
+}
+
 # Set environment variables from repo config files
-Set-ConfigEnvironmentVariable -Name 'PSMUX_CONFIG_FILE' -Path (Join-Path $repoConfigRoot 'psmux\psmux.conf')
+Set-ConfigEnvironmentVariable -Name 'PSMUX_CONFIG_FILE' -Path $userPsmuxConfig
 Set-ConfigEnvironmentVariable -Name 'BAT_CONFIG_PATH' -Path (Join-Path $repoConfigRoot 'bat\config')
 Set-ConfigEnvironmentVariable -Name 'EZA_CONFIG_DIR' -Path (Join-Path $repoConfigRoot 'eza')
 Set-ConfigEnvironmentVariable -Name 'YAZI_CONFIG_HOME' -Path (Join-Path $repoConfigRoot 'yazi')

@@ -168,8 +168,10 @@ function Install-PsmuxPluginManager {
     }
 
     Write-Host "`n==> Appending dynamic plugin commands to psmux.conf" -ForegroundColor Cyan
-    $pluginCommands = @()
+    $pluginLines = @()
     foreach ($pluginName in $requiredPlugins) {
+        $pluginLines += "set -g @plugin 'psmux-plugins/$pluginName'"
+
         $mainScript = if ($pluginName -eq 'ppm') {
             'ppm.ps1'
         }
@@ -180,16 +182,16 @@ function Install-PsmuxPluginManager {
             continue
         }
 
-        $pluginCommands += "run '~/.config/psmux/plugins/$pluginName/$mainScript'"
+        $pluginLines += "run '~/.config/psmux/plugins/$pluginName/$mainScript'"
     }
 
-    if ($pluginCommands.Count -eq 0) {
+    if ($pluginLines.Count -eq 0) {
         return
     }
 
     $startMarker = '# BEGIN: managed psmux plugins'
     $endMarker = '# END: managed psmux plugins'
-    $managedBlock = @($startMarker) + $pluginCommands + @($endMarker)
+    $managedBlock = @($startMarker) + $pluginLines + @($endMarker)
 
     $lines = @(Get-Content -Path $userPsmuxConf)
     $startIndex = [Array]::IndexOf($lines, $startMarker)
