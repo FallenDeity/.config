@@ -136,7 +136,7 @@ function Install-PsmuxPluginManager {
         return
     }
 
-    if (-not (Test-Path (Join-Path $repoPluginsRoot 'ppm\ppm.ps1'))) {
+    if (-not (Test-Path $repoPluginsRoot)) {
         Write-Host "psmux plugin submodule is missing or not initialized: $repoPluginsRoot" -ForegroundColor Yellow
         Write-Host 'Run: git submodule update --init --recursive' -ForegroundColor Yellow
         return
