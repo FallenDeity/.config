@@ -270,6 +270,20 @@ function Install-ClinkSetup {
     catch {
         Write-Host "Failed to enable clink autorun: $($_.Exception.Message)" -ForegroundColor Yellow
     }
+
+    $repoCmdStartupScript = Join-Path (Split-Path -Parent $ScriptsRoot) 'cmd\clink_start.cmd'
+    if (Test-Path $repoCmdStartupScript) {
+        try {
+            clink set clink.autostart "call `"$repoCmdStartupScript`"" 2>$null
+            Write-Host "Clink autostart set to: $repoCmdStartupScript" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "Failed to configure clink autostart: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+    else {
+        Write-Host "Cmd startup script not found: $repoCmdStartupScript" -ForegroundColor Yellow
+    }
     
     $OhMyPoshTheme = Join-Path (Split-Path -Parent $ScriptsRoot) 'oh-my-posh\themes\night-owl.omp.json'
     
