@@ -51,8 +51,50 @@ function Ensure-ScoopPackages {
         }
 
         Write-Host "Installing: $pkg"
-        scoop install $pkg -u
+        Install-ScoopPackageSafely -Package $pkg
     }
+}
+
+function Remove-ScoopPartialAppDirectory {
+    param([string]$Package)
+
+    if ([string]::IsNullOrWhiteSpace($env:SCOOP)) {
+        return
+    }
+
+    $normalized = ($Package -split '/')[-1]
+    $appRoot = Join-Path $env:SCOOP "apps\$normalized"
+
+    if (Test-Path $appRoot) {
+        Remove-Item -Path $appRoot -Recurse -Force
+        Write-Host "Removed partial Scoop app directory: $appRoot" -ForegroundColor Yellow
+    }
+}
+
+function Install-ScoopPackageSafely {
+    param([string]$Package)
+
+    $output = & scoop install $Package -u 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0) {
+        return
+    }
+
+    $normalizedOutput = $output.Trim()
+    $collisionDetected = ($normalizedOutput -match 'already exists') -and ($normalizedOutput -match 'pre_install|Running pre_install script')
+
+    if ($collisionDetected) {
+        Write-Host "Scoop install collision detected for $Package; retrying once after clearing partial install state." -ForegroundColor Yellow
+        Remove-ScoopPartialAppDirectory -Package $Package
+
+        $retryOutput = & scoop install $Package -u 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) {
+            return
+        }
+
+        $normalizedOutput = $retryOutput.Trim()
+    }
+
+    throw ("Scoop install failed for {0}: {1}" -f $Package, $normalizedOutput)
 }
 
 function Ensure-GhExtensions {

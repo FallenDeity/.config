@@ -39,6 +39,51 @@ function Ensure-Directory {
     }
 }
 
+function Convert-DircolorsFileToLsColors {
+    param([string]$Path)
+
+    if (-not (Test-Path $Path)) {
+        return $null
+    }
+
+    $entries = New-Object System.Collections.Generic.List[string]
+    $ignoredKeywords = @('TERM', 'COLOR', 'EIGHTBIT', 'OPTIONS')
+
+    foreach ($line in Get-Content -Path $Path) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $content = $trimmed -replace '\s+#.*$', ''
+        if ([string]::IsNullOrWhiteSpace($content)) {
+            continue
+        }
+
+        $tokens = $content -split '\s+'
+        if ($tokens.Count -lt 2) {
+            continue
+        }
+
+        if ($ignoredKeywords -contains $tokens[0]) {
+            continue
+        }
+
+        $value = ($tokens[1..($tokens.Count - 1)] -join ' ').Trim()
+        if ([string]::IsNullOrWhiteSpace($value)) {
+            continue
+        }
+
+        $entries.Add(('{0}={1}' -f $tokens[0], $value))
+    }
+
+    if ($entries.Count -eq 0) {
+        return $null
+    }
+
+    return ($entries -join ':')
+}
+
 function Apply-GitConfigHardcoded {
     Write-Step 'Applying hardcoded git global config'
     git config --global user.name 'Triyan Mukherjee'
@@ -571,22 +616,16 @@ if (Test-Path $repoDircolorsFile) {
     $env:DIR_COLORS = $repoDircolorsFile
     Write-Host "DIR_COLORS set (User): $repoDircolorsFile" -ForegroundColor Green
 
-    if (Get-Command dircolors -ErrorAction SilentlyContinue) {
-        $dircolorsOutput = (& dircolors -b $repoDircolorsFile 2>$null | Out-String)
-        if ($dircolorsOutput -match "LS_COLORS='([^']+)'") {
-            $lsColorsValue = $Matches[1]
-            [Environment]::SetEnvironmentVariable('LS_COLORS', $lsColorsValue, 'User')
-            $env:LS_COLORS = $lsColorsValue
-            [Environment]::SetEnvironmentVariable('EZA_COLORS', $lsColorsValue, 'User')
-            $env:EZA_COLORS = $lsColorsValue
-            Write-Host 'LS_COLORS and EZA_COLORS generated from dircolors and set (User).' -ForegroundColor Green
-        }
-        else {
-            Write-Host 'Failed to generate LS_COLORS from dircolors output.' -ForegroundColor Yellow
-        }
+    $lsColorsValue = Convert-DircolorsFileToLsColors -Path $repoDircolorsFile
+    if (-not [string]::IsNullOrWhiteSpace($lsColorsValue)) {
+        [Environment]::SetEnvironmentVariable('LS_COLORS', $lsColorsValue, 'User')
+        $env:LS_COLORS = $lsColorsValue
+        [Environment]::SetEnvironmentVariable('EZA_COLORS', $lsColorsValue, 'User')
+        $env:EZA_COLORS = $lsColorsValue
+        Write-Host 'LS_COLORS and EZA_COLORS generated from dircolors file and set (User).' -ForegroundColor Green
     }
     else {
-        Write-Host 'dircolors command not found; install uutils-coreutils or equivalent for LS_COLORS generation.' -ForegroundColor Yellow
+        Write-Host 'Failed to generate LS_COLORS from dircolors file.' -ForegroundColor Yellow
     }
 }
 else {
