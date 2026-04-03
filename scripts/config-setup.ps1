@@ -342,8 +342,8 @@ Initialize-GitSubmodules
 $repoConfigRoot = Split-Path -Parent $ScriptsRoot
 Write-Host "Config root: $repoConfigRoot" -ForegroundColor DarkGreen
 
-# Set environment variables from repo config files
-Set-ConfigEnvironmentVariable -Name 'PSMUX_CONFIG_FILE' -Path (Join-Path $repoConfigRoot 'psmux\psmux.conf')
+# Set environment variables from repo/user config files
+Set-ConfigEnvironmentVariable -Name 'PSMUX_CONFIG_FILE' -Path (Join-Path $HOME '.config\psmux\psmux.conf')
 Set-ConfigEnvironmentVariable -Name 'BAT_CONFIG_PATH' -Path (Join-Path $repoConfigRoot 'bat\config')
 Set-ConfigEnvironmentVariable -Name 'EZA_CONFIG_DIR' -Path (Join-Path $repoConfigRoot 'eza')
 Set-ConfigEnvironmentVariable -Name 'YAZI_CONFIG_HOME' -Path (Join-Path $repoConfigRoot 'yazi')

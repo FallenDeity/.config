@@ -145,14 +145,6 @@ function Install-PsmuxPluginManager {
     Ensure-Directory -Path $userPsmuxDir
     Ensure-Directory -Path $targetPluginsRoot
 
-    if (Test-Path $repoPsmuxConf) {
-        Copy-Item -Path $repoPsmuxConf -Destination $userPsmuxConf -Force
-        Write-Host "psmux config synced to: $userPsmuxConf" -ForegroundColor Green
-    }
-    else {
-        Write-Host "psmux config not found in repo: $repoPsmuxConf" -ForegroundColor Yellow
-    }
-
     foreach ($pluginName in $requiredPlugins) {
         $sourcePath = Join-Path $repoPluginsRoot $pluginName
         $targetPath = Join-Path $targetPluginsRoot $pluginName
