@@ -19,19 +19,29 @@ function Ensure-ScoopInstalled {
 }
 
 function Ensure-ScoopBuckets {
-    param([string[]]$Buckets)
+    param(
+        [Parameter(Mandatory = $false)]
+        [hashtable]$BucketsWithSources = @{}
+    )
 
     $existingBuckets = @(scoop bucket list | ForEach-Object {
         if ($_ -match '^([\w\-]+)\s+') { $matches[1] }
     })
 
-    foreach ($bucket in $Buckets) {
+    foreach ($bucket in $BucketsWithSources.Keys) {
         if ($existingBuckets -contains $bucket) {
             Write-Host "Bucket exists: $bucket" -ForegroundColor DarkGreen
         }
         else {
-            Write-Host "Adding bucket: $bucket"
-            scoop bucket add $bucket
+            $source = $BucketsWithSources[$bucket]
+            if ($source) {
+                Write-Host "Adding bucket: $bucket ($source)"
+                scoop bucket add $bucket $source
+            }
+            else {
+                Write-Host "Adding bucket: $bucket"
+                scoop bucket add $bucket
+            }
         }
     }
 }
@@ -58,12 +68,17 @@ function Ensure-ScoopPackages {
 function Remove-ScoopPartialAppDirectory {
     param([string]$Package)
 
-    if ([string]::IsNullOrWhiteSpace($env:SCOOP)) {
+    $scoopRoot = [Environment]::GetEnvironmentVariable('SCOOP', 'User')
+    if ([string]::IsNullOrWhiteSpace($scoopRoot)) {
+        $scoopRoot = [Environment]::GetEnvironmentVariable('SCOOP', 'Process')
+    }
+
+    if ([string]::IsNullOrWhiteSpace($scoopRoot)) {
         return
     }
 
     $normalized = ($Package -split '/')[-1]
-    $appRoot = Join-Path $env:SCOOP "apps\$normalized"
+    $appRoot = Join-Path $scoopRoot "apps\$normalized"
 
     if (Test-Path $appRoot) {
         Remove-Item -Path $appRoot -Recurse -Force
@@ -160,7 +175,12 @@ function Ensure-UvAndTools {
 Ensure-ScoopInstalled
 
 Write-Step 'Ensuring Scoop buckets'
-Ensure-ScoopBuckets -Buckets @('extras', 'nerd-fonts', 'sysinternals')
+Ensure-ScoopBuckets -BucketsWithSources @{
+    'extras'       = $null
+    'nerd-fonts'   = $null
+    'sysinternals' = $null
+    'psmux'        = 'https://github.com/psmux/scoop-psmux'
+}
 
 $categoryCoreTools = @(
     'uutils-coreutils',
@@ -221,6 +241,7 @@ $categoryCoreTools = @(
     'pipx',
     'poppler',
     'PSFzf',
+    'psmux',
     'extras/vcredist2022'
 )
 

@@ -5,27 +5,8 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $ScriptsRoot = Split-Path -Parent $PSCommandPath
-
-$PluginArchitecture = if ($env:PROCESSOR_ARCHITECTURE -match 'ARM64') { 'arm64' } else { 'x64' }
-$PluginsRoot = Join-Path $HOME 'AppData\Local\Microsoft\PowerToys\PowerToys Run\Plugins'
-$PluginDownloadCache = Join-Path $HOME '.cache\powertoys-plugin-cache'
-
 $LanguageSetupScript = Join-Path $ScriptsRoot 'languages\install-language-toolchains.ps1'
 $PreferredWslDistro = 'Ubuntu'
-
-$PluginRepos = @(
-    'https://github.com/ruslanlap/PowerToysRun-VideoDownloader',
-    'https://github.com/ruslanlap/PowerToysRun-SpeedTest',
-    'https://github.com/ruslanlap/PowerToysRun-Hotkeys',
-    'https://github.com/Darkdriller/PowerToys-Run-LocalLLm',
-    'https://github.com/nathancartlidge/powertoys-run-unicode',
-    'https://github.com/8LWXpg/PowerToysRun-ProcessKiller',
-    'https://github.com/Quriz/PowerToysRunScoop',
-    'https://github.com/dandn9/prun-lorem',
-    'https://github.com/bostrot/PowerToysRunPluginWinget',
-    'https://github.com/Advaith3600/PowerToys-Run-Currency-Converter',
-    'https://github.com/lin-ycv/EverythingPowerToys'
-)
 
 function Write-Step {
     param([string]$Message)
@@ -41,7 +22,6 @@ function Ensure-Directory {
 
 function Convert-DircolorsFileToLsColors {
     param([string]$Path)
-
     if (-not (Test-Path $Path)) {
         return $null
     }
@@ -109,105 +89,52 @@ function Apply-GitConfigHardcoded {
     }
 }
 
-function Get-RepoOwnerAndName {
-    param([string]$RepoUrl)
-
-    $trimmed = $RepoUrl.TrimEnd('/')
-    if ($trimmed -notmatch 'github\.com/([^/]+)/([^/]+)$') {
-        throw "Invalid GitHub repo URL: $RepoUrl"
-    }
-
-    return @($Matches[1], $Matches[2])
-}
-
-function Get-PreferredReleaseAsset {
+function Set-ConfigEnvironmentVariable {
     param(
-        [object[]]$Assets,
-        [string]$Architecture
+        [string]$Name,
+        [string]$Path,
+        [string]$Description = $null
     )
 
-    if (-not $Assets -or $Assets.Count -eq 0) {
-        return $null
-    }
-
-    $archiveAssets = $Assets | Where-Object {
-        $_.name -match '\.(zip|nupkg|7z|rar)$'
-    }
-
-    if (-not $archiveAssets -or $archiveAssets.Count -eq 0) {
-        return $null
-    }
-
-    $archMatches = $archiveAssets | Where-Object {
-        $_.name -match "(?i)$Architecture"
-    }
-    if ($archMatches -and $archMatches.Count -gt 0) {
-        return $archMatches | Select-Object -First 1
-    }
-
-    $x64Fallback = $archiveAssets | Where-Object { $_.name -match '(?i)x64|amd64' }
-    if ($x64Fallback -and $x64Fallback.Count -gt 0) {
-        return $x64Fallback | Select-Object -First 1
-    }
-
-    return $archiveAssets | Select-Object -First 1
-}
-
-function Expand-PluginArchive {
-    param(
-        [string]$ArchivePath,
-        [string]$DestinationPath
-    )
-
-    if (Test-Path $DestinationPath) {
-        Remove-Item -Recurse -Force $DestinationPath
-    }
-    Ensure-Directory -Path $DestinationPath
-
-    if ($ArchivePath -match '\.(zip|nupkg)$') {
-        Expand-Archive -Path $ArchivePath -DestinationPath $DestinationPath -Force
+    if (-not (Test-Path $Path)) {
+        Write-Host "$Name path not found: $Path" -ForegroundColor Yellow
         return
     }
 
-    if ($ArchivePath -match '\.7z$') {
-        if (Get-Command 7z -ErrorAction SilentlyContinue) {
-            & 7z x "$ArchivePath" "-o$DestinationPath" -y | Out-Null
-            return
-        }
-        throw "7z archive detected but 7z is not installed: $ArchivePath"
-    }
-
-    if ($ArchivePath -match '\.rar$') {
-        if (Get-Command 7z -ErrorAction SilentlyContinue) {
-            & 7z x "$ArchivePath" "-o$DestinationPath" -y | Out-Null
-            return
-        }
-
-        if (Get-Command unrar -ErrorAction SilentlyContinue) {
-            & unrar x -o+ "$ArchivePath" "$DestinationPath\" | Out-Null
-            return
-        }
-
-        throw "rar archive detected but neither 7z nor unrar is installed: $ArchivePath"
-    }
-
-    throw "Unsupported archive type: $ArchivePath"
+    [Environment]::SetEnvironmentVariable($Name, $Path, 'User')
+    Set-Item -Path "env:$Name" -Value $Path
+    Write-Host "$Name set (User): $Path" -ForegroundColor Green
 }
 
-function Get-PluginContentPath {
-    param([string]$ExtractRoot)
+function Sync-ConfigDirectory {
+    param(
+        [string]$Source,
+        [string]$Destination,
+        [string]$Description = $null
+    )
 
-    $pluginJson = Get-ChildItem -Path $ExtractRoot -Filter 'plugin.json' -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($pluginJson) {
-        return Split-Path -Parent $pluginJson.FullName
+    if (-not (Test-Path $Source)) {
+        Write-Host "$Description source not found: $Source" -ForegroundColor Yellow
+        return
     }
 
-    $candidates = Get-ChildItem -Path $ExtractRoot -Directory -ErrorAction SilentlyContinue
-    if ($candidates.Count -eq 1) {
-        return $candidates[0].FullName
+    Ensure-Directory -Path $Destination
+
+    $srcFull = [System.IO.Path]::GetFullPath($Source)
+    $dstFull = [System.IO.Path]::GetFullPath($Destination)
+    if ($srcFull -ieq $dstFull) {
+        Write-Host "$Description source and destination are identical; skipping copy." -ForegroundColor DarkGreen
+        return
     }
 
-    return $ExtractRoot
+    $backupFile = Join-Path $Destination ("{0}.backup.{1}" -f (Split-Path -Leaf $Source), (Get-Date -Format 'yyyyMMdd-HHmmss'))
+    if (Test-Path (Join-Path $Destination (Split-Path -Leaf $Source))) {
+        Copy-Item -Path (Join-Path $Destination (Split-Path -Leaf $Source)) -Destination $backupFile -Force -ErrorAction SilentlyContinue
+        Write-Host "Backed up existing to: $backupFile" -ForegroundColor DarkGreen
+    }
+
+    Copy-Item -Path (Join-Path $Source '*') -Destination $Destination -Recurse -Force
+    Write-Host "$Description synced to: $Destination" -ForegroundColor Green
 }
 
 function Install-PowerShellProfile {
@@ -373,215 +300,30 @@ function Ensure-WSLInstalled {
     }
 }
 
-function Install-WindowsTerminalProfileIcons {
-    Write-Step 'Setting up Windows Terminal profile icons'
 
-    $repoIconsDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'windows-terminal\icons'
-    if (-not (Test-Path $repoIconsDir)) {
-        Write-Host "No repo icons directory found: $repoIconsDir" -ForegroundColor Yellow
-        return
-    }
-
-    $stableRoaming = Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState\icons'
-    $previewRoaming = Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\RoamingState\icons'
-
-    $targetDir = if (Test-Path (Split-Path -Parent $stableRoaming)) { $stableRoaming } elseif (Test-Path (Split-Path -Parent $previewRoaming)) { $previewRoaming } else { $stableRoaming }
-    Ensure-Directory -Path $targetDir
-
-    Copy-Item -Path (Join-Path $repoIconsDir '*') -Destination $targetDir -Force -ErrorAction SilentlyContinue
-    Write-Host "Windows Terminal icons synced to: $targetDir" -ForegroundColor Green
-}
-
-function Install-WindowsTerminalSettings {
-    Write-Step 'Setting up Windows Terminal settings'
-
-    $repoSettings = Join-Path (Split-Path -Parent $ScriptsRoot) 'windows-terminal\settings.json'
-    if (-not (Test-Path $repoSettings)) {
-        Write-Host "Windows Terminal settings file not found: $repoSettings" -ForegroundColor Yellow
-        return
-    }
-
-    $stableDir = Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState'
-    $previewDir = Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState'
-
-    $targetDir = if (Test-Path $stableDir) { $stableDir } elseif (Test-Path $previewDir) { $previewDir } else { $stableDir }
-    Ensure-Directory -Path $targetDir
-
-    $targetFile = Join-Path $targetDir 'settings.json'
-    if (Test-Path $targetFile) {
-        $backupFile = Join-Path $targetDir ("settings.backup.{0}.json" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
-        Copy-Item -Path $targetFile -Destination $backupFile -Force
-        Write-Host "Backed up existing settings to: $backupFile" -ForegroundColor DarkGreen
-    }
-
-    Copy-Item -Path $repoSettings -Destination $targetFile -Force
-    Write-Host "Windows Terminal settings synced: $targetFile" -ForegroundColor Green
-}
-
-function Install-AlacrittyConfig {
-    Write-Step 'Setting up Alacritty config'
-
-    $repoAlacrittyDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'alacritty'
-    if (-not (Test-Path $repoAlacrittyDir)) {
-        Write-Host "Alacritty config directory not found: $repoAlacrittyDir" -ForegroundColor Yellow
-        return
-    }
-
-    $targetDir = Join-Path $env:APPDATA 'alacritty'
-    Ensure-Directory -Path $targetDir
-
-    $targetConfig = Join-Path $targetDir 'alacritty.toml'
-    if (Test-Path $targetConfig) {
-        $backupFile = Join-Path $targetDir ("alacritty.backup.{0}.toml" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
-        Copy-Item -Path $targetConfig -Destination $backupFile -Force
-        Write-Host "Backed up existing Alacritty config to: $backupFile" -ForegroundColor DarkGreen
-    }
-
-    Copy-Item -Path (Join-Path $repoAlacrittyDir '*') -Destination $targetDir -Recurse -Force
-    Write-Host "Alacritty config synced to: $targetDir" -ForegroundColor Green
-}
-
-function Install-Btop4winTheme {
-    Write-Step 'Setting up btop4win config'
-
+function Initialize-GitSubmodules {
+    Write-Step 'Initializing git submodules'
+    
     $repoRoot = Split-Path -Parent $ScriptsRoot
-    $repoBtopDir = Join-Path $repoRoot 'btop'
-    if (-not (Test-Path $repoBtopDir)) {
-        Write-Host "btop config directory not found: $repoBtopDir" -ForegroundColor Yellow
-        return
-    }
-
-    if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
-        Write-Host 'scoop not found; skipping btop4win theme setup.' -ForegroundColor Yellow
-        return
-    }
-
-    $btopPrefix = (& scoop prefix btop 2>$null | Out-String).Trim()
-    if ([string]::IsNullOrWhiteSpace($btopPrefix)) {
-        $btopPrefix = (& scoop prefix btop-lhm 2>$null | Out-String).Trim()
-    }
-
-    if ([string]::IsNullOrWhiteSpace($btopPrefix) -or -not (Test-Path $btopPrefix)) {
-        Write-Host 'btop4win is not installed via scoop yet; skipping theme setup.' -ForegroundColor Yellow
-        return
-    }
-
-    Copy-Item -Path (Join-Path $repoBtopDir '*') -Destination $btopPrefix -Recurse -Force
-    Write-Host "btop config synced to: $btopPrefix" -ForegroundColor Green
-}
-
-function Install-PowerToysPluginsFromGitHub {
-    param(
-        [string[]]$Repos,
-        [string]$Architecture,
-        [string]$PluginsDestination,
-        [string]$DownloadCache
-    )
-
-    Write-Step 'Installing PowerToys Run plugins from GitHub releases'
-
-    Ensure-Directory -Path $PluginsDestination
-    Ensure-Directory -Path $DownloadCache
-
-    foreach ($repoUrl in $Repos) {
-        try {
-            $owner, $name = Get-RepoOwnerAndName -RepoUrl $repoUrl
-            Write-Host "Processing: $owner/$name"
-
-            $releaseApi = "https://api.github.com/repos/$owner/$name/releases/latest"
-            $release = Invoke-RestMethod -Uri $releaseApi -Headers @{ 'User-Agent' = 'config-setup' }
-
-            $asset = Get-PreferredReleaseAsset -Assets $release.assets -Architecture $Architecture
-            if (-not $asset) {
-                Write-Host "No archive asset found for $owner/$name (x64/arm64). Skipping." -ForegroundColor Yellow
-                continue
-            }
-
-            $archivePath = Join-Path $DownloadCache $asset.name
-            $extractPath = Join-Path $DownloadCache ("$name-extracted")
-            $targetPath = Join-Path $PluginsDestination $name
-
-            Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $archivePath
-            Expand-PluginArchive -ArchivePath $archivePath -DestinationPath $extractPath
-
-            $contentPath = Get-PluginContentPath -ExtractRoot $extractPath
-
-            if (Test-Path $targetPath) {
-                Remove-Item -Recurse -Force $targetPath
-            }
-            Ensure-Directory -Path $targetPath
-            Copy-Item -Path (Join-Path $contentPath '*') -Destination $targetPath -Recurse -Force
-
-            Write-Host "Installed plugin to: $targetPath" -ForegroundColor Green
+    
+    try {
+        Push-Location $repoRoot
+        $result = git submodule status 2>&1
+        
+        if ($result -match '^\-') {
+            Write-Host 'Uninitialized submodules detected, running git submodule update --init --recursive' -ForegroundColor DarkGreen
+            git submodule update --init --recursive
+            Write-Host 'Git submodules initialized successfully.' -ForegroundColor Green
         }
-        catch {
-            $errorMessage = $_.Exception.Message
-            Write-Host ("Failed plugin install for " + $repoUrl + " - " + $errorMessage) -ForegroundColor Red
+        else {
+            Write-Host 'Git submodules already initialized.' -ForegroundColor DarkGreen
         }
     }
-}
-
-function Stop-PowerToysForPluginInstall {
-    $running = @(Get-Process -Name 'PowerToys' -ErrorAction SilentlyContinue)
-    if (-not $running -or $running.Count -eq 0) {
-        return @{ WasRunning = $false; ExecutablePath = $null }
+    catch {
+        Write-Host "Warning: Failed to initialize submodules: $_" -ForegroundColor Yellow
     }
-
-    $executablePath = $null
-    foreach ($proc in $running) {
-        if ($proc.Path) {
-            $executablePath = $proc.Path
-            break
-        }
-    }
-
-    if (-not $executablePath) {
-        $knownPaths = @(
-            (Join-Path $env:ProgramFiles 'PowerToys\PowerToys.exe'),
-            (Join-Path $env:LOCALAPPDATA 'PowerToys\PowerToys.exe')
-        )
-        foreach ($path in $knownPaths) {
-            if (Test-Path $path) {
-                $executablePath = $path
-                break
-            }
-        }
-    }
-
-    Write-Host 'PowerToys is running. Stopping it before plugin update...' -ForegroundColor Yellow
-    $running | Stop-Process -Force
-    Start-Sleep -Seconds 2
-
-    return @{ WasRunning = $true; ExecutablePath = $executablePath }
-}
-
-function Start-PowerToysAfterPluginInstall {
-    param([hashtable]$State)
-
-    if (-not $State -or -not $State.WasRunning) {
-        return
-    }
-
-    $executablePath = $State.ExecutablePath
-    if (-not $executablePath -or -not (Test-Path $executablePath)) {
-        $knownPaths = @(
-            (Join-Path $env:ProgramFiles 'PowerToys\PowerToys.exe'),
-            (Join-Path $env:LOCALAPPDATA 'PowerToys\PowerToys.exe')
-        )
-        foreach ($path in $knownPaths) {
-            if (Test-Path $path) {
-                $executablePath = $path
-                break
-            }
-        }
-    }
-
-    if ($executablePath -and (Test-Path $executablePath)) {
-        Start-Process -FilePath $executablePath
-        Write-Host 'PowerToys restarted after plugin update.' -ForegroundColor Green
-    }
-    else {
-        Write-Host 'PowerToys was stopped, but executable was not found for auto-restart.' -ForegroundColor Yellow
+    finally {
+        Pop-Location
     }
 }
 
@@ -594,42 +336,22 @@ else {
 }
 Install-PowerShellProfile
 
+# Initialize git submodules early so repo-vendored plugins/configs are available
+Initialize-GitSubmodules
+
 $repoConfigRoot = Split-Path -Parent $ScriptsRoot
 Write-Host "Config root: $repoConfigRoot" -ForegroundColor DarkGreen
 
-$repoBatConfig = Join-Path (Split-Path -Parent $ScriptsRoot) 'bat\config'
-if (Test-Path $repoBatConfig) {
-    [Environment]::SetEnvironmentVariable('BAT_CONFIG_PATH', $repoBatConfig, 'User')
-    $env:BAT_CONFIG_PATH = $repoBatConfig
-    Write-Host "BAT_CONFIG_PATH set (User): $repoBatConfig" -ForegroundColor Green
-}
-else {
-    Write-Host "bat config not found: $repoBatConfig" -ForegroundColor Yellow
-}
+# Set environment variables from repo config files
+Set-ConfigEnvironmentVariable -Name 'PSMUX_CONFIG_FILE' -Path (Join-Path $repoConfigRoot 'psmux\psmux.conf')
+Set-ConfigEnvironmentVariable -Name 'BAT_CONFIG_PATH' -Path (Join-Path $repoConfigRoot 'bat\config')
+Set-ConfigEnvironmentVariable -Name 'EZA_CONFIG_DIR' -Path (Join-Path $repoConfigRoot 'eza')
+Set-ConfigEnvironmentVariable -Name 'YAZI_CONFIG_HOME' -Path (Join-Path $repoConfigRoot 'yazi')
 
-$repoEzaConfigDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'eza'
-if (Test-Path $repoEzaConfigDir) {
-    Ensure-Directory -Path $repoEzaConfigDir
-    [Environment]::SetEnvironmentVariable('EZA_CONFIG_DIR', $repoEzaConfigDir, 'User')
-    $env:EZA_CONFIG_DIR = $repoEzaConfigDir
-    Write-Host "EZA_CONFIG_DIR set (User): $repoEzaConfigDir" -ForegroundColor Green
-
-    $repoEzaTheme = Join-Path $repoEzaConfigDir 'theme.yml'
-    if (-not (Test-Path $repoEzaTheme)) {
-        Set-Content -Path $repoEzaTheme -Value "colourful: true`n" -Encoding UTF8
-        Write-Host "Created default eza theme file: $repoEzaTheme" -ForegroundColor DarkGreen
-    }
-}
-else {
-    Write-Host "eza config directory not found: $repoEzaConfigDir" -ForegroundColor Yellow
-}
-
-$repoDircolorsFile = Join-Path (Split-Path -Parent $ScriptsRoot) 'dircolors\dircolors'
+# Handle dir colors and derived LS_COLORS/EZA_COLORS
+$repoDircolorsFile = Join-Path $repoConfigRoot 'dircolors\dircolors'
 if (Test-Path $repoDircolorsFile) {
-    [Environment]::SetEnvironmentVariable('DIR_COLORS', $repoDircolorsFile, 'User')
-    $env:DIR_COLORS = $repoDircolorsFile
-    Write-Host "DIR_COLORS set (User): $repoDircolorsFile" -ForegroundColor Green
-
+    Set-ConfigEnvironmentVariable -Name 'DIR_COLORS' -Path $repoDircolorsFile
     $lsColorsValue = Convert-DircolorsFileToLsColors -Path $repoDircolorsFile
     if (-not [string]::IsNullOrWhiteSpace($lsColorsValue)) {
         [Environment]::SetEnvironmentVariable('LS_COLORS', $lsColorsValue, 'User')
@@ -638,63 +360,35 @@ if (Test-Path $repoDircolorsFile) {
         $env:EZA_COLORS = $lsColorsValue
         Write-Host 'LS_COLORS and EZA_COLORS generated from dircolors file and set (User).' -ForegroundColor Green
     }
-    else {
-        Write-Host 'Failed to generate LS_COLORS from dircolors file.' -ForegroundColor Yellow
-    }
 }
 else {
     Write-Host "dircolors config file not found: $repoDircolorsFile" -ForegroundColor Yellow
 }
 
+# Posting themes directory
 $postingThemeDir = Join-Path $HOME '.config\posting\themes'
 Ensure-Directory -Path $postingThemeDir
 [Environment]::SetEnvironmentVariable('POSTING_THEME_DIRECTORY', $postingThemeDir, 'User')
 $env:POSTING_THEME_DIRECTORY = $postingThemeDir
 Write-Host "POSTING_THEME_DIRECTORY set (User): $postingThemeDir" -ForegroundColor Green
 
-$repoYaziConfigDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'yazi'
-if (Test-Path $repoYaziConfigDir) {
-    Ensure-Directory -Path $repoYaziConfigDir
-    [Environment]::SetEnvironmentVariable('YAZI_CONFIG_HOME', $repoYaziConfigDir, 'User')
-    $env:YAZI_CONFIG_HOME = $repoYaziConfigDir
-    Write-Host "YAZI_CONFIG_HOME set (User): $repoYaziConfigDir" -ForegroundColor Green
-}
-else {
-    Write-Host "yazi config directory not found: $repoYaziConfigDir" -ForegroundColor Yellow
-}
-
-$repoLazygitDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'lazygit'
+# Lazygit config sync
+$repoLazygitDir = Join-Path $repoConfigRoot 'lazygit'
 $homeLazygitDir = Join-Path $HOME '.config\lazygit'
 if (Test-Path $repoLazygitDir) {
-    Ensure-Directory -Path $homeLazygitDir
-
-    $repoLazygitFullPath = [System.IO.Path]::GetFullPath($repoLazygitDir)
-    $homeLazygitFullPath = [System.IO.Path]::GetFullPath($homeLazygitDir)
-    if ($repoLazygitFullPath -ieq $homeLazygitFullPath) {
-        Write-Host "lazygit source and destination are identical; skipping copy: $homeLazygitFullPath" -ForegroundColor DarkGreen
-    }
-    else {
-        Copy-Item -Path (Join-Path $repoLazygitDir '*') -Destination $homeLazygitDir -Recurse -Force
-    }
-
+    Sync-ConfigDirectory -Source $repoLazygitDir -Destination $homeLazygitDir -Description 'Lazygit config'
     $lazygitBaseConfig = Join-Path $homeLazygitDir 'config.yml'
     $lazygitThemeFile = Join-Path $homeLazygitDir 'themes\mocha\blue.yml'
-
     if ((Test-Path $lazygitBaseConfig) -and (Test-Path $lazygitThemeFile)) {
         $lgConfigValue = "{0},{1}" -f ($lazygitBaseConfig.Replace('\', '/')), ($lazygitThemeFile.Replace('\', '/'))
         [Environment]::SetEnvironmentVariable('LG_CONFIG_FILE', $lgConfigValue, 'User')
         $env:LG_CONFIG_FILE = $lgConfigValue
         Write-Host "LG_CONFIG_FILE set (User): $lgConfigValue" -ForegroundColor Green
     }
-    else {
-        Write-Host "lazygit config/theme missing under: $homeLazygitDir" -ForegroundColor Yellow
-    }
-}
-else {
-    Write-Host "lazygit config directory not found: $repoLazygitDir" -ForegroundColor Yellow
 }
 
-$repoRipgrepDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'ripgrep'
+# Ripgrep config generation
+$repoRipgrepDir = Join-Path $repoConfigRoot 'ripgrep'
 $repoRipgrepTemplate = Join-Path $repoRipgrepDir 'ripgreprc.template'
 $repoRipgrepIgnore = Join-Path $repoRipgrepDir 'ignore'
 $userRipgrepConfig = Join-Path $HOME '.ripgreprc'
@@ -702,13 +396,9 @@ if ((Test-Path $repoRipgrepTemplate) -and (Test-Path $repoRipgrepIgnore)) {
     $ripgrepTemplateContent = Get-Content -Path $repoRipgrepTemplate -Raw
     $ripgrepConfigContent = $ripgrepTemplateContent.Replace('__RIPGREP_IGNORE_FILE__', $repoRipgrepIgnore.Replace('\', '/'))
     Set-Content -Path $userRipgrepConfig -Value $ripgrepConfigContent -Encoding UTF8
-
     [Environment]::SetEnvironmentVariable('RIPGREP_CONFIG_PATH', $userRipgrepConfig, 'User')
     $env:RIPGREP_CONFIG_PATH = $userRipgrepConfig
     Write-Host "RIPGREP_CONFIG_PATH set (User): $userRipgrepConfig" -ForegroundColor Green
-}
-else {
-    Write-Host "ripgrep template/ignore missing in: $repoRipgrepDir" -ForegroundColor Yellow
 }
 
 # direnv setup - disabled (kept for future enablement)
@@ -728,10 +418,13 @@ if (-not $ConfigOnly) {
 else {
     Write-Host 'Config-only mode: skipping WSL install checks.' -ForegroundColor DarkGreen
 }
-Install-WindowsTerminalProfileIcons
-Install-WindowsTerminalSettings
-Install-AlacrittyConfig
-Install-Btop4winTheme
+$configAssetsScript = Join-Path $ScriptsRoot 'helpers\install-config-assets.ps1'
+if (Test-Path $configAssetsScript) {
+    & $configAssetsScript -ScriptsRoot $ScriptsRoot
+}
+else {
+    Write-Host "Config assets installer script not found: $configAssetsScript" -ForegroundColor Yellow
+}
 
 Write-Step 'Setting up git config'
 
@@ -754,23 +447,18 @@ else {
     Write-Host "Language setup script not found: $LanguageSetupScript" -ForegroundColor Yellow
 }
 
-Write-Step 'Setting up PowerToys Run plugins from GitHub releases'
-
-Write-Step "Plugin architecture: $PluginArchitecture"
-Write-Step "Plugins root: $PluginsRoot"
-
+# PowerToys plugin setup (delegated to separate script)
 if ($ConfigOnly) {
     Write-Host 'Config-only mode: skipping PowerToys plugin install.' -ForegroundColor DarkGreen
 }
 else {
-    $powerToysState = Stop-PowerToysForPluginInstall
-    try {
-        Install-PowerToysPluginsFromGitHub -Repos $PluginRepos -Architecture $PluginArchitecture -PluginsDestination $PluginsRoot -DownloadCache $PluginDownloadCache
+    $powerToysScript = Join-Path $ScriptsRoot 'helpers\install-powertoys.ps1'
+    if (Test-Path $powerToysScript) {
+        & $powerToysScript
     }
-    finally {
-        Start-PowerToysAfterPluginInstall -State $powerToysState
+    else {
+        Write-Host "PowerToys install script not found: $powerToysScript" -ForegroundColor Yellow
     }
 }
 
-Write-Step 'PowerToys Run plugin setup complete.'
 Write-Step 'All configuration setup complete.'

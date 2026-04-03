@@ -1,0 +1,3 @@
+[submodule "psmux/plugins"]
+	path = psmux/plugins
+	url = https://github.com/psmux/psmux-plugins.git
