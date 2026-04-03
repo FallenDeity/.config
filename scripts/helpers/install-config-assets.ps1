@@ -158,7 +158,8 @@ function Install-PsmuxPluginManager {
             Remove-Item -Path $targetPath -Recurse -Force
         }
 
-        Copy-Item -Path $sourcePath -Destination $targetPath -Recurse -Force
+        Ensure-Directory -Path $targetPath
+        Get-ChildItem -LiteralPath $sourcePath -Force | Copy-Item -Destination $targetPath -Recurse -Force
         Write-Host "psmux plugin synced: $pluginName" -ForegroundColor Green
     }
 
