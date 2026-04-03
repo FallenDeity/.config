@@ -116,16 +116,25 @@ function Install-PsmuxPluginManager {
     Write-Host "`n==> Setting up psmux plugins from repo submodule" -ForegroundColor Cyan
 
     $repoRoot = Split-Path -Parent $ScriptsRoot
-    $repoPluginsRoot = Join-Path $repoRoot 'psmux\plugins'
-    $targetPluginsRoot = Join-Path $HOME '.psmux\plugins'
+    $repoPsmuxDir = Join-Path $repoRoot 'psmux'
+    $repoPsmuxConf = Join-Path $repoPsmuxDir 'psmux.conf'
+    $repoPluginsRoot = Join-Path $repoPsmuxDir 'plugins'
 
-    $pluginsListFile = Join-Path $repoRoot 'psmux\plugins.list'
+    $userPsmuxDir = Join-Path $HOME '.config\psmux'
+    $userPsmuxConf = Join-Path $userPsmuxDir 'psmux.conf'
+    $targetPluginsRoot = Join-Path $userPsmuxDir 'plugins'
+
+    $pluginsListFile = Join-Path $repoPsmuxDir 'plugins.list'
     if (-not (Test-Path $pluginsListFile)) {
         Write-Host "psmux plugins list not found: $pluginsListFile" -ForegroundColor Yellow
         return
     }
 
-    $requiredPlugins = @(Get-Content -Path $pluginsListFile | Where-Object { $_ -and -not $_.StartsWith('#') } | ForEach-Object { $_.Trim() })
+    $requiredPlugins = @(Get-Content -Path $pluginsListFile | ForEach-Object { $_.Trim() } | Where-Object { $_ -and -not $_.StartsWith('#') })
+    if ($requiredPlugins.Count -eq 0) {
+        Write-Host 'psmux plugins list is empty; skipping plugin setup.' -ForegroundColor Yellow
+        return
+    }
 
     if (-not (Test-Path (Join-Path $repoPluginsRoot 'ppm\ppm.ps1'))) {
         Write-Host "psmux plugin submodule is missing or not initialized: $repoPluginsRoot" -ForegroundColor Yellow
@@ -133,7 +142,16 @@ function Install-PsmuxPluginManager {
         return
     }
 
+    Ensure-Directory -Path $userPsmuxDir
     Ensure-Directory -Path $targetPluginsRoot
+
+    if (Test-Path $repoPsmuxConf) {
+        Copy-Item -Path $repoPsmuxConf -Destination $userPsmuxConf -Force
+        Write-Host "psmux config synced to: $userPsmuxConf" -ForegroundColor Green
+    }
+    else {
+        Write-Host "psmux config not found in repo: $repoPsmuxConf" -ForegroundColor Yellow
+    }
 
     foreach ($pluginName in $requiredPlugins) {
         $sourcePath = Join-Path $repoPluginsRoot $pluginName
@@ -152,32 +170,46 @@ function Install-PsmuxPluginManager {
         Write-Host "psmux plugin synced: $pluginName" -ForegroundColor Green
     }
 
-    $userPsmuxConf = Join-Path $HOME '.psmux\psmux.conf'
-    if (Test-Path $userPsmuxConf) {
-        $confContent = Get-Content -Path $userPsmuxConf -Raw
-        if ($confContent -notmatch 'run.*psmux-sensible\.ps1') {
-            Write-Host "`n==> Appending dynamic plugin commands to psmux.conf" -ForegroundColor Cyan
+    if (-not (Test-Path $userPsmuxConf)) {
+        return
+    }
 
-            $pluginCommands = @()
-            foreach ($pluginName in $requiredPlugins) {
-                $pluginScriptPath = "~/.psmux/plugins/$pluginName"
-                $mainScript = if ($pluginName -eq 'ppm') {
-                    'ppm.ps1'
-                }
-                elseif ($pluginName -like 'psmux-*') {
-                    "$pluginName.ps1"
-                }
-                else {
-                    continue
-                }
-
-                $pluginCommands += "run '$pluginScriptPath/$mainScript'"
-            }
-
-            if ($pluginCommands.Count -gt 0) {
-                Add-Content -Path $userPsmuxConf -Value $("`n" + ($pluginCommands -join "`n"))
-            }
+    Write-Host "`n==> Appending dynamic plugin commands to psmux.conf" -ForegroundColor Cyan
+    $pluginCommands = @()
+    foreach ($pluginName in $requiredPlugins) {
+        $mainScript = if ($pluginName -eq 'ppm') {
+            'ppm.ps1'
         }
+        elseif ($pluginName -like 'psmux-*') {
+            "$pluginName.ps1"
+        }
+        else {
+            continue
+        }
+
+        $pluginCommands += "run '~/.config/psmux/plugins/$pluginName/$mainScript'"
+    }
+
+    if ($pluginCommands.Count -eq 0) {
+        return
+    }
+
+    $startMarker = '# BEGIN: managed psmux plugins'
+    $endMarker = '# END: managed psmux plugins'
+    $managedBlock = @($startMarker) + $pluginCommands + @($endMarker)
+
+    $lines = @(Get-Content -Path $userPsmuxConf)
+    $startIndex = [Array]::IndexOf($lines, $startMarker)
+    $endIndex = [Array]::IndexOf($lines, $endMarker)
+
+    if ($startIndex -ge 0 -and $endIndex -gt $startIndex) {
+        $before = if ($startIndex -gt 0) { $lines[0..($startIndex - 1)] } else { @() }
+        $after = if ($endIndex -lt ($lines.Count - 1)) { $lines[($endIndex + 1)..($lines.Count - 1)] } else { @() }
+        $newLines = @($before + $managedBlock + $after)
+        Set-Content -Path $userPsmuxConf -Value $newLines -Encoding UTF8
+    }
+    else {
+        Add-Content -Path $userPsmuxConf -Value ("`n" + ($managedBlock -join "`n"))
     }
 }
 
