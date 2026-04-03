@@ -347,8 +347,19 @@ $userPsmuxDir = Join-Path $HOME '.config\psmux'
 $userPsmuxConfig = Join-Path $userPsmuxDir 'psmux.conf'
 Ensure-Directory -Path $userPsmuxDir
 if (Test-Path $repoPsmuxConfig) {
-    Copy-Item -Path $repoPsmuxConfig -Destination $userPsmuxConfig -Force
-    Write-Host "PSMUX config rendered to: $userPsmuxConfig" -ForegroundColor Green
+    $repoPsmuxFullPath = [System.IO.Path]::GetFullPath($repoPsmuxConfig)
+    $userPsmuxFullPath = [System.IO.Path]::GetFullPath($userPsmuxConfig)
+
+    if ($repoPsmuxFullPath -ieq $userPsmuxFullPath) {
+        Write-Host "PSMUX config already points at the rendered file: $userPsmuxConfig" -ForegroundColor DarkGreen
+    }
+    elseif (-not (Test-Path $userPsmuxConfig)) {
+        Copy-Item -Path $repoPsmuxConfig -Destination $userPsmuxConfig -Force
+        Write-Host "PSMUX config rendered to: $userPsmuxConfig" -ForegroundColor Green
+    }
+    else {
+        Write-Host "PSMUX config already exists; leaving it in place: $userPsmuxConfig" -ForegroundColor DarkGreen
+    }
 }
 else {
     Write-Host "psmux config template not found: $repoPsmuxConfig" -ForegroundColor Yellow
