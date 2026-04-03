@@ -382,6 +382,35 @@ function Install-AlacrittyConfig {
     Write-Host "Alacritty config synced to: $targetDir" -ForegroundColor Green
 }
 
+function Install-Btop4winTheme {
+    Write-Step 'Setting up btop4win config'
+
+    $repoRoot = Split-Path -Parent $ScriptsRoot
+    $repoBtopDir = Join-Path $repoRoot 'btop'
+    if (-not (Test-Path $repoBtopDir)) {
+        Write-Host "btop config directory not found: $repoBtopDir" -ForegroundColor Yellow
+        return
+    }
+
+    if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+        Write-Host 'scoop not found; skipping btop4win theme setup.' -ForegroundColor Yellow
+        return
+    }
+
+    $btopPrefix = (& scoop prefix btop 2>$null | Out-String).Trim()
+    if ([string]::IsNullOrWhiteSpace($btopPrefix)) {
+        $btopPrefix = (& scoop prefix btop-lhm 2>$null | Out-String).Trim()
+    }
+
+    if ([string]::IsNullOrWhiteSpace($btopPrefix) -or -not (Test-Path $btopPrefix)) {
+        Write-Host 'btop4win is not installed via scoop yet; skipping theme setup.' -ForegroundColor Yellow
+        return
+    }
+
+    Copy-Item -Path (Join-Path $repoBtopDir '*') -Destination $btopPrefix -Recurse -Force
+    Write-Host "btop config synced to: $btopPrefix" -ForegroundColor Green
+}
+
 function Install-PowerToysPluginsFromGitHub {
     param(
         [string[]]$Repos,
@@ -536,6 +565,34 @@ else {
     Write-Host "eza config directory not found: $repoEzaConfigDir" -ForegroundColor Yellow
 }
 
+$repoDircolorsFile = Join-Path (Split-Path -Parent $ScriptsRoot) 'dircolors\dircolors'
+if (Test-Path $repoDircolorsFile) {
+    [Environment]::SetEnvironmentVariable('DIR_COLORS', $repoDircolorsFile, 'User')
+    $env:DIR_COLORS = $repoDircolorsFile
+    Write-Host "DIR_COLORS set (User): $repoDircolorsFile" -ForegroundColor Green
+
+    if (Get-Command dircolors -ErrorAction SilentlyContinue) {
+        $dircolorsOutput = (& dircolors -b $repoDircolorsFile 2>$null | Out-String)
+        if ($dircolorsOutput -match "LS_COLORS='([^']+)'") {
+            $lsColorsValue = $Matches[1]
+            [Environment]::SetEnvironmentVariable('LS_COLORS', $lsColorsValue, 'User')
+            $env:LS_COLORS = $lsColorsValue
+            [Environment]::SetEnvironmentVariable('EZA_COLORS', $lsColorsValue, 'User')
+            $env:EZA_COLORS = $lsColorsValue
+            Write-Host 'LS_COLORS and EZA_COLORS generated from dircolors and set (User).' -ForegroundColor Green
+        }
+        else {
+            Write-Host 'Failed to generate LS_COLORS from dircolors output.' -ForegroundColor Yellow
+        }
+    }
+    else {
+        Write-Host 'dircolors command not found; install uutils-coreutils or equivalent for LS_COLORS generation.' -ForegroundColor Yellow
+    }
+}
+else {
+    Write-Host "dircolors config file not found: $repoDircolorsFile" -ForegroundColor Yellow
+}
+
 $postingThemeDir = Join-Path $HOME '.config\posting\themes'
 Ensure-Directory -Path $postingThemeDir
 [Environment]::SetEnvironmentVariable('POSTING_THEME_DIRECTORY', $postingThemeDir, 'User')
@@ -621,6 +678,7 @@ else {
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
 Install-AlacrittyConfig
+Install-Btop4winTheme
 
 Write-Step 'Setting up git config'
 

@@ -126,6 +126,7 @@ $categoryCoreTools = @(
     'bat',
     'bind',
     'broot',
+    'btop',
     'clink',
     'curl',
     'delta',

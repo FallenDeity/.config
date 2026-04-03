@@ -45,10 +45,6 @@
           "Version": "15.0.2000.5"
         },
         {
-          "PackageIdentifier": "Zoom.ZoomVDIUniversalPlugin",
-          "Version": "6.0.25360"
-        },
-        {
           "PackageIdentifier": "RealVNC.VNCViewer",
           "Version": "7.15.1.18"
         },

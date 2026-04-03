@@ -1,5 +1,6 @@
 param(
-    [switch]$ConfigOnly
+    [switch]$ConfigOnly,
+    [switch]$ForceReinstallWingetPackages
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,7 +18,7 @@ function Write-Step {
 
 if (-not $ConfigOnly) {
     Write-Step 'Phase 1: Winget install'
-    & $WingetScript -ImportFile $ImportFile
+    & $WingetScript -ImportFile $ImportFile -ForceReinstall:$ForceReinstallWingetPackages
 
     Write-Step 'Phase 2: Scoop install'
     & $ScoopScript

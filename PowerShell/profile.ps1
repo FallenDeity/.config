@@ -174,8 +174,8 @@ function custom-ls {
         Get-ChildItem -Path $Path
         return
     }
-    
-    eza -lab --group-directories-first --git --icons --hyperlink $Path
+
+    eza -lab --group-directories-first --group --git --color=always --icons=always --color-scale=all --sort=time --hyperlink $Path
 }
 
 # Set ls alias to custom-ls

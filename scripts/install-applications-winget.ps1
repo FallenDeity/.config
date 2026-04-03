@@ -1,6 +1,7 @@
 param(
     [string]$ImportFile = (Join-Path $env:USERPROFILE '.config\winstall.json'),
     [switch]$IncludeVersions = $false,
+    [switch]$ForceReinstall = $false,
     [switch]$SkipWingetImport = $false,
     [int]$RetryCount = 2,
     [int]$RetryDelaySeconds = 2
@@ -54,10 +55,28 @@ function Get-ManifestPackages {
     return @($packages | Sort-Object PackageIdentifier -Unique)
 }
 
+function Test-WingetPackageInstalled {
+    param([string]$PackageId)
+
+    $arguments = @(
+        'list',
+        '--id', $PackageId,
+        '-e',
+        '--accept-source-agreements',
+        '--disable-interactivity'
+    )
+
+    $output = (& winget @arguments 2>&1 | Out-String)
+    $noMatch = $output -match 'No installed package found matching input criteria\.'
+
+    return -not $noMatch
+}
+
 function Install-WingetPackages {
     param(
         [object[]]$Packages,
         [bool]$PinVersions,
+        [bool]$AllowReinstall,
         [hashtable]$Overrides,
         [int]$MaxRetries,
         [int]$RetryDelay
@@ -72,6 +91,16 @@ function Install-WingetPackages {
         $packageVersion = $package.Version
 
         Write-Host "Processing package: $packageId" -ForegroundColor Cyan
+
+        if (-not $AllowReinstall -and (Test-WingetPackageInstalled -PackageId $packageId)) {
+            $results += [PSCustomObject]@{
+                PackageIdentifier = $packageId
+                Status = 'already-installed-skipped'
+                Attempts = 0
+            }
+            Write-Host "Status: already-installed-skipped ($packageId)" -ForegroundColor DarkGreen
+            continue
+        }
 
         $attempt = 0
         $installed = $false
@@ -156,7 +185,7 @@ Ensure-ImportFile -Path $ImportFile
 
 if (-not $SkipWingetImport) {
     $manifestPackages = Get-ManifestPackages -Path $ImportFile
-    Install-WingetPackages -Packages $manifestPackages -PinVersions:$IncludeVersions -Overrides $PackageInstallerOverrides -MaxRetries $RetryCount -RetryDelay $RetryDelaySeconds
+    Install-WingetPackages -Packages $manifestPackages -PinVersions:$IncludeVersions -AllowReinstall:$ForceReinstall -Overrides $PackageInstallerOverrides -MaxRetries $RetryCount -RetryDelay $RetryDelaySeconds
 }
 else {
     Write-Host 'Skipping winget import as requested.' -ForegroundColor Yellow
