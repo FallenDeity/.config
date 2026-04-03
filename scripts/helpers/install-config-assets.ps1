@@ -120,7 +120,7 @@ function Install-PsmuxPluginManager {
     $repoPsmuxConf = Join-Path $repoPsmuxDir 'psmux.conf'
     $repoPluginsRoot = Join-Path $repoPsmuxDir 'plugins'
 
-    $userPsmuxDir = Join-Path $HOME '.config\psmux'
+    $userPsmuxDir = Join-Path (Join-Path $HOME '.config') 'psmux'
     $userPsmuxConf = Join-Path $userPsmuxDir 'psmux.conf'
     $targetPluginsRoot = Join-Path $userPsmuxDir 'plugins'
 
