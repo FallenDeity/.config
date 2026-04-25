@@ -1,0 +1,29 @@
+# Generic Git settings included from global ~/.gitconfig
+
+[pull]
+    ff = only
+
+[diff]
+    algorithm = histogram
+    submodule = log
+
+[commit]
+    verbose = true
+
+[rerere]
+    enabled = true
+
+[help]
+    autocorrect = prompt
+
+[status]
+    submoduleSummary = true
+
+[submodule]
+    recurse = true
+
+[branch]
+    sort = -committerdate
+
+[core]
+    autocrlf = false

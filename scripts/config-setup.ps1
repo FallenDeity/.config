@@ -71,21 +71,30 @@ function Apply-GitConfigHardcoded {
     Write-Host 'Set git config: user.name' -ForegroundColor Green
     Write-Host 'Set git config: user.email' -ForegroundColor Green
 
-    $repoDeltaGitConfig = Join-Path (Split-Path -Parent $ScriptsRoot) 'delta\gitconfig'
-    if (Test-Path $repoDeltaGitConfig) {
-        $existingIncludes = @(git config --global --get-all include.path 2>$null)
-        $repoDeltaGitConfigForward = $repoDeltaGitConfig.Replace('\', '/')
+    $existingIncludes = @(git config --global --get-all include.path 2>$null)
+    $repoRoot = Split-Path -Parent $ScriptsRoot
+    $gitConfigFiles = @(
+        @{ Path = (Join-Path $repoRoot 'git\gitconfig'); Label = 'generic' },
+        @{ Path = (Join-Path $repoRoot 'delta\gitconfig'); Label = 'delta' }
+    )
 
-        if (-not ($existingIncludes -contains $repoDeltaGitConfig) -and -not ($existingIncludes -contains $repoDeltaGitConfigForward)) {
-            git config --global --add include.path $repoDeltaGitConfig
-            Write-Host "Added git include.path for delta config: $repoDeltaGitConfig" -ForegroundColor Green
+    foreach ($gitConfigFile in $gitConfigFiles) {
+        $gitConfigPath = $gitConfigFile.Path
+        $gitConfigLabel = $gitConfigFile.Label
+
+        if (-not (Test-Path $gitConfigPath)) {
+            Write-Host "$gitConfigLabel git config not found: $gitConfigPath" -ForegroundColor Yellow
+            continue
+        }
+
+        $gitConfigPathForward = $gitConfigPath.Replace('\', '/')
+        if (-not ($existingIncludes -contains $gitConfigPath) -and -not ($existingIncludes -contains $gitConfigPathForward)) {
+            git config --global --add include.path $gitConfigPath
+            Write-Host "Added git include.path for $gitConfigLabel config: $gitConfigPath" -ForegroundColor Green
         }
         else {
-            Write-Host "Git include.path already present for delta config: $repoDeltaGitConfig" -ForegroundColor DarkGreen
+            Write-Host "Git include.path already present for $gitConfigLabel config: $gitConfigPath" -ForegroundColor DarkGreen
         }
-    }
-    else {
-        Write-Host "delta git config not found: $repoDeltaGitConfig" -ForegroundColor Yellow
     }
 }
 
