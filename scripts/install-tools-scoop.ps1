@@ -24,8 +24,9 @@ function Ensure-ScoopBuckets {
         [hashtable]$BucketsWithSources = @{}
     )
 
-    $existingBuckets = @(scoop bucket list | ForEach-Object {
-        if ($_ -match '^([\w\-]+)\s+') { $matches[1] }
+    $existingBuckets = @(scoop bucket list 2>$null | ForEach-Object {
+        if ($_.Name) { $_.Name }
+        elseif ($_ -match '(?i)^\s*([a-z0-9\-_]+)\s+') { $matches[1] }
     })
 
     foreach ($bucket in $BucketsWithSources.Keys) {
@@ -202,6 +203,9 @@ function Ensure-UvAndTools {
 
 Ensure-ScoopInstalled
 
+Write-Step 'Updating Scoop and bucket manifests'
+scoop update
+
 Write-Step 'Ensuring Scoop buckets'
 Ensure-ScoopBuckets -BucketsWithSources @{
     'extras'       = $null
@@ -301,6 +305,7 @@ $psModules = @(
     'ZLocation'
     'PsFzf'
     'PSTools'
+    'posh-git'
 )
 
 foreach ($moduleName in $psModules) {

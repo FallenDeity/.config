@@ -1,5 +1,10 @@
+// Zellij Configuration
+// Centrally managed configuration
+
 theme "catppuccin-mocha"
 default_shell "pwsh"
+on_force_close "quit"
+pane_frames false
 
 ui {
     pane_frames {

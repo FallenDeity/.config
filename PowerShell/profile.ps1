@@ -13,7 +13,8 @@ $requiredModules = @(
     'PSReadLine',
     'ZLocation',
     'PsFzf',
-    'PSTools'
+    'PSTools',
+    'posh-git'
 )
 
 foreach ($module in $requiredModules) {
