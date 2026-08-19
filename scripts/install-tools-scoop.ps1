@@ -207,23 +207,23 @@ Ensure-ScoopBuckets -BucketsWithSources @{
     'extras'       = $null
     'nerd-fonts'   = $null
     'sysinternals' = $null
-    'psmux'        = 'https://github.com/psmux/scoop-psmux'
 }
 
 $categoryCoreTools = @(
     'uutils-coreutils',
     'autohotkey',
     'bat',
-    'bind',
-    'broot',
     'btop',
     'bombardier',
     'clink',
     'curl',
     'delta',
+    'difftastic',
     'diffutils',
     'direnv',
+    'doggo',
     'dos2unix',
+    'duf',
     'dust',
     'eza',
     'fastfetch',
@@ -246,11 +246,12 @@ $categoryCoreTools = @(
     'kubectl',
     'lazygit',
     'less',
-    'lf',
     'make',
     'mediainfo',
+    'navi',
     'neovim',
     'ngrok',
+    'procs',
     'rclone',
     'ripgrep',
     'scoop-search',
@@ -260,20 +261,22 @@ $categoryCoreTools = @(
     'sysinternals/psshutdown',
     'sysinternals/regjump',
     'sysinternals/sdelete',
+    'tealdeer',
     'tokei',
-    'touch',
-    'tre-command',
     'ttyd',
     'unzip',
     'vhs',
+    'watchexec',
     'wget',
     'whois',
+    'xh',
     'yazi',
+    'yq',
+    'zellij',
     'zoxide',
     'pipx',
     'poppler',
     'PSFzf',
-    'psmux',
     'extras/vcredist2022'
 )
 

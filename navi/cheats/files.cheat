@@ -1,0 +1,145 @@
+% directory, listing, eza
+# List files with detailed metadata, icons, and git status
+eza -lah --icons --git
+
+# List directory as a visual tree with level limit
+eza --tree --level=<level> --icons
+
+# List files sorted by modification date (newest first)
+eza -lh --sort=modified --reverse --icons
+
+# List files sorted by size (largest first)
+eza -lh --sort=size --reverse --icons
+
+# List only directories
+eza -lD --icons
+
+$ level: echo '1 2 3 4' | tr ' ' '\n'
+
+
+% find, search, fd
+# Find files by name recursively (respects .gitignore)
+fd <pattern>
+
+# Find files with specific file extension
+fd -e <extension>
+
+# Find hidden and git-ignored files
+fd -H -I <pattern>
+
+# Find only directories matching pattern
+fd -t d <dir_name>
+
+# Execute command on every matching file in parallel
+fd -e <extension> -x <command> {}
+
+# Find files modified within the last X minutes/hours/days (e.g. 10m, 2h, 1d)
+fd --changed-within <time_window>
+
+
+% grep, text-search, ripgrep
+# Search text recursively across workspace
+rg "<search_query>"
+
+# Search text case-insensitively
+rg -i "<search_query>"
+
+# Search text in specific file types only
+rg -t <file_type> "<search_query>"
+
+# Search including hidden and git-ignored files
+rg -u "<search_query>"
+
+# Show 3 lines of context around search matches
+rg -C 3 "<search_query>"
+
+# List only filenames that contain matches
+rg -l "<search_query>"
+
+# Replace search pattern across all files (use with sd or sed)
+rg "<old_text>" --replace "<new_text>"
+
+$ file_type: echo 'rust py powershell json toml yaml md js ts go html css' | tr ' ' '\n'
+
+
+% fuzzy-search, fzf, interactive
+# Interactive fuzzy file finder and print selected path
+fzf
+
+# Interactive search with preview using bat
+fzf --preview 'bat --style=numbers --color=always {}'
+
+# Fuzzy search command history with fzf
+fzf --tac
+
+
+% file-manager, yazi
+# Open terminal file manager (Yazi)
+yazi
+
+
+% disk, storage, duf
+# View mounted drives, storage usage, and filesystems
+duf
+
+# View only local physical drives (hide network & virtual mounts)
+duf --only local
+
+# Output disk usage metrics as JSON
+duf --json
+
+# Sort disk devices by free space
+duf --sort free
+
+
+% disk, directory-usage, dust
+# Analyze disk usage of current directory with visual bar chart
+dust
+
+# Analyze disk usage with limited tree depth
+dust -d <depth>
+
+# Analyze disk usage of specific directory
+dust <path>
+
+# Reverse display order (largest items at the bottom)
+dust -r
+
+$ depth: echo '1 2 3 4 5' | tr ' ' '\n'
+
+
+% preview, view, bat, glow, fx, file, mediainfo
+# View syntax-highlighted file contents with line numbers (Bat)
+bat <file_path>
+
+# View syntax-highlighted plain text without decorations (Bat)
+bat -p <file_path>
+
+# Render Markdown in terminal with styling (Glow)
+glow <markdown_file>
+
+# Interactive JSON viewer and manipulator in terminal (Fx)
+fx <json_file>
+
+# Inspect file type and MIME info (File)
+file <target_file>
+
+# Inspect audio/video/image metadata and codecs (MediaInfo)
+mediainfo <media_file>
+
+
+% cloud-storage, sync, rclone
+# List configured remote cloud storage endpoints
+rclone listremotes
+
+# List directories on cloud remote
+rclone lsd <remote_name>:
+
+# Copy files from local folder to cloud remote
+rclone copy <local_path> <remote_name>:<remote_path> --progress
+
+# Sync local folder with cloud remote (mirrors changes)
+rclone sync <local_path> <remote_name>:<remote_path> --progress
+
+# Check differences between local directory and cloud remote
+rclone check <local_path> <remote_name>:<remote_path>

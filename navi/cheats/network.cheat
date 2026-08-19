@@ -1,0 +1,89 @@
+% dns, network, doggo
+# Query DNS records for a domain (A, AAAA, MX, TXT)
+doggo <domain>
+
+# Query specific DNS record type with Doggo
+doggo <domain> <record_type>
+
+# Query DNS using a specific nameserver (e.g. 1.1.1.1, 8.8.8.8)
+doggo <domain> @<nameserver>
+
+# Query DNS over HTTPS (DoH) with Cloudflare/Google
+doggo <domain> @https://cloudflare-dns.com/dns-query
+
+# Reverse DNS lookup (IP to hostname)
+doggo --reverse <ip_address>
+
+# Output DNS response as JSON
+doggo <domain> --json
+
+$ record_type: echo 'A AAAA CNAME MX TXT NS SOA PTR' | tr ' ' '\n'
+$ nameserver: echo '1.1.1.1 8.8.8.8 9.9.9.9' | tr ' ' '\n'
+
+
+% http, api, web, xh
+# Send HTTP GET request
+xh <url>
+
+# Send HTTP POST with JSON body
+xh post <url> <key>=<value>
+
+# Send HTTP POST with raw JSON types (numbers, booleans)
+xh post <url> <key>:=<raw_json_value>
+
+# Send Form data (application/x-www-form-urlencoded)
+xh -f post <url> <key>=<value>
+
+# Send request with Bearer token authentication
+xh <url> "Authorization:Bearer <token>"
+
+# Send request with Custom Headers
+xh <url> <header_name>:<header_value>
+
+# Download a file with progress bar (like curl -O)
+xh --download <url>
+
+
+% http, benchmark, load-testing, bombardier
+# Fast HTTP benchmarking / load testing with bombardier
+bombardier -c <concurrent_connections> -n <total_requests> <target_url>
+
+# Benchmark HTTP throughput for a fixed duration (e.g. 10s, 1m)
+bombardier -c <concurrent_connections> -d <duration> <target_url>
+
+# Benchmark HTTP endpoint with rate limiting (requests/sec)
+bombardier -r <req_per_second> -d <duration> <target_url>
+
+$ concurrent_connections: echo '10 50 100 250 500' | tr ' ' '\n'
+$ duration: echo '10s 30s 1m 5m' | tr ' ' '\n'
+
+
+% network, speed, throughput, iperf3
+# Run iPerf3 in client mode to test network throughput
+iperf3 -c <server_ip>
+
+# Run iPerf3 in server mode to receive speed tests
+iperf3 -s -p <port>
+
+# Run iPerf3 client test with parallel streams (multi-threaded)
+iperf3 -c <server_ip> -P <parallel_streams>
+
+# Run iPerf3 test in reverse direction (download from server)
+iperf3 -c <server_ip> -R
+
+$ parallel_streams: echo '2 4 8 16' | tr ' ' '\n'
+
+
+% tunnel, webhook, expose, ngrok
+# Expose local HTTP port to a public URL with ngrok
+ngrok http <local_port>
+
+# Expose local TCP port with ngrok
+ngrok tcp <local_port>
+
+$ local_port: echo '3000 5000 8000 8080 8443' | tr ' ' '\n'
+
+
+% domain, whois, network
+# Query domain registrar and registration WHOIS info
+whois <domain_or_ip>

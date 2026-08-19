@@ -1,0 +1,113 @@
+% file-watcher, automation, dev, watchexec
+# Watch current directory and re-run command on any change
+watchexec -- <command>
+
+# Watch only files with specific extensions and run command
+watchexec -e <extensions> -- <command>
+
+# Watch specific folder and restart command on changes
+watchexec -w <watch_directory> -- <command>
+
+# Clear terminal screen before executing command on change
+watchexec -c -e <extensions> -- <command>
+
+# Send SIGTERM and wait before restart (graceful debounce)
+watchexec -r --debounce <debounce_ms> -- <command>
+
+$ extensions: echo 'ps1,rs,py,go,js,ts,json,toml,yaml' | tr ' ' '\n'
+
+
+% command-runner, automation, just, make
+# List available recipes in justfile
+just --list
+
+# Run a specific just recipe with arguments
+just <recipe>
+
+# Run Make target
+make <target>
+
+
+% yaml, json, parsing, yq, jq
+# Read a specific key from a YAML file with yq
+yq '.<property>' <yaml_file>
+
+# Update a key in a YAML file in-place with yq
+yq -i '.<property> = "<value>"' <yaml_file>
+
+# Convert YAML to JSON
+yq -o=json <yaml_file>
+
+# Convert JSON to YAML
+yq -p=json -o=yaml <json_file>
+
+# Pretty-print JSON with jq
+jq '.' <json_file>
+
+# Extract specific field from JSON array with jq
+jq '.[].<field>' <json_file>
+
+
+% diff, git, difftastic, delta
+# Structurally compare two files with AST syntax awareness (Difftastic)
+difft <file_a> <file_b>
+
+# Show side-by-side git diff with Delta
+git diff | delta --side-by-side
+
+
+% git, github, gh, lazygit, git-crypt
+# Open interactive terminal Git UI (Lazygit)
+lazygit
+
+# View GitHub pull requests with gh CLI
+gh pr list
+
+# Create a pull request from current branch
+gh pr create --web
+
+# View GitHub issues
+gh issue list
+
+# Unlock encrypted repository files with git-crypt
+git-crypt unlock <key_file>
+
+
+% editor, terminal, neovim
+# Open Neovim editor
+nvim <file_path>
+
+# Open Neovim in diff mode for two files
+nvim -d <file_1> <file_2>
+
+
+% terminal, workspace, zellij
+# Start a new Zellij session
+zellij
+
+# Start or attach to a named Zellij session
+zellij attach -c <session_name>
+
+# List active Zellij sessions
+zellij list-sessions
+
+# Kill all active Zellij sessions
+zellij kill-all-sessions
+
+
+% directory-jumper, navigation, zoxide
+# Jump to highest ranked directory matching query
+z <directory_query>
+
+# Interactive directory selection with fzf integration
+zi
+
+
+% terminal-recording, web-terminal, vhs, ttyd
+# Record terminal GIF from a .tape specification file (VHS)
+vhs <tape_file>
+
+# Share terminal session over HTTP web browser with ttyd
+ttyd -p <port> pwsh.exe
+
+$ port: echo '7681 8080 3000' | tr ' ' '\n'

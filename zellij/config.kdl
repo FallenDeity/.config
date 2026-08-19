@@ -1,0 +1,8 @@
+theme "catppuccin-mocha"
+default_shell "pwsh"
+
+ui {
+    pane_frames {
+        rounded_corners true
+    }
+}

@@ -1,0 +1,46 @@
+% video, audio, media, ffmpeg
+# Convert video to MP4 format (H.264 / AAC)
+ffmpeg -i <input_video> -c:v libx264 -c:a aac <output_video>.mp4
+
+# Extract audio from video file as MP3
+ffmpeg -i <input_video> -vn -acodec libmp3lame -q:a 2 <output_audio>.mp3
+
+# Trim/cut video from start time to duration without re-encoding
+ffmpeg -ss <start_time> -i <input_video> -to <end_time> -c copy <output_video>
+
+# Convert video to animated GIF
+ffmpeg -i <input_video> -vf "fps=15,scale=720:-1:flags=lanczos" <output_gif>.gif
+
+# Compress video file using CRF quality scale (18-28)
+ffmpeg -i <input_video> -vcodec libx264 -crf <crf_value> <output_compressed>.mp4
+
+$ start_time: echo '00:00:00 00:01:00' | tr ' ' '\n'
+$ crf_value: echo '18 20 23 28' | tr ' ' '\n'
+
+
+% image, manipulation, imagemagick
+# Resize image maintaining aspect ratio
+magick <input_image> -resize <dimensions> <output_image>
+
+# Convert image format (PNG, JPG, WebP, AVIF)
+magick <input_image> <output_image>
+
+# Compress and optimize JPG image quality
+magick <input_image> -quality <quality_percent> <output_image>
+
+# Create PDF from multiple images
+magick <images> <output_document>.pdf
+
+$ dimensions: echo '1920x1080 1280x720 800x600 50%' | tr ' ' '\n'
+$ quality_percent: echo '80 85 90' | tr ' ' '\n'
+
+
+% pdf, documents, poppler, ghostscript
+# Convert PDF pages to PNG images (Poppler pdftoppm)
+pdftoppm -png -r 150 <input_pdf> <output_prefix>
+
+# Extract plain text from PDF (Poppler pdftotext)
+pdftotext <input_pdf> <output_text_file>.txt
+
+# Compress and reduce PDF file size with Ghostscript
+gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=<compressed_pdf> <input_pdf>

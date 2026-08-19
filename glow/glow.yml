@@ -1,0 +1,7 @@
+# Glow markdown viewer configuration
+style: "dark"
+mouse: true
+pager: true
+width: 120
+all: true
+showLineNumbers: true

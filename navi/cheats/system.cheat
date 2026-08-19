@@ -1,0 +1,75 @@
+% system-monitor, btop, procs
+# Open interactive system and resource monitor (btop)
+btop
+
+# Search processes by name or PID with colorized tree
+procs <process_name>
+
+# Find process listening on or connected to a specific TCP port
+procs --tcp <port>
+
+# Sort processes by CPU usage descending
+procs --sortd cpu
+
+# Sort processes by memory consumption descending
+procs --sortd mem
+
+# View process hierarchy tree
+procs --tree
+
+
+% system-info, fastfetch
+# Display system overview and specs in terminal
+fastfetch
+
+
+% benchmark, performance, hyperfine
+# Benchmark execution time of a single command
+hyperfine "<command>"
+
+# Benchmark and compare execution times of two commands
+hyperfine "<command_1>" "<command_2>"
+
+# Benchmark with warmup runs and minimum runs
+hyperfine --warmup <warmup_count> -m <min_runs> "<command>"
+
+$ warmup_count: echo '3 5 10' | tr ' ' '\n'
+$ min_runs: echo '10 20 50' | tr ' ' '\n'
+
+
+% code-stats, tokei
+# Count lines of code, comments, and blanks by language
+tokei
+
+# Count lines of code for specific path
+tokei <path>
+
+# Sort languages by lines of code
+tokei --sort lines
+
+
+% sysinternals, windows, admin
+# Launch Sysinternals Autoruns to inspect startup programs
+autoruns
+
+# Securely wipe a file or directory with zeroing (Sysinternals SDelete)
+sdelete -p 3 -s -z <file_or_folder>
+
+# Jump directly to a Windows Registry path in Regedit (RegJump)
+regjump <registry_key_path>
+
+# Run process on a remote system or with SYSTEM privileges (PsExec)
+psexec -s -i <command>
+
+# Schedule or abort a remote/local system shutdown (PsShutdown)
+psshutdown -k -t <seconds>
+
+
+
+
+% formatting, line-endings, dos2unix
+# Convert Windows CRLF line endings to Unix LF
+dos2unix <file_path>
+
+# Convert Unix LF line endings to Windows CRLF
+unix2dos <file_path>

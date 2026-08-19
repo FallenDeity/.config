@@ -1,0 +1,12 @@
+# Doggo CLI configuration
+# Maps directly to CLI flags: https://github.com/mr-karan/doggo/blob/main/config-cli-sample.toml
+
+nameserver = [
+    "1.1.1.1",
+    "https://cloudflare-dns.com/dns-query",
+    "https://dns.google/dns-query"
+]
+strategy = "first"
+timeout = "5s"
+color = true
+ndots = 1

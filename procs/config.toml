@@ -1,0 +1,41 @@
+[style]
+theme = "Dark"
+
+[display]
+show_self = false
+
+[[columns]]
+kind = "Pid"
+style = "BrightCyan"
+
+[[columns]]
+kind = "User"
+style = "BrightYellow"
+
+[[columns]]
+kind = "CpuTime"
+style = "White"
+
+[[columns]]
+kind = "UsageCpu"
+style = "ByPercentage"
+
+[[columns]]
+kind = "UsageMem"
+style = "ByUnit"
+
+[[columns]]
+kind = "ReadBytes"
+style = "ByUnit"
+
+[[columns]]
+kind = "WriteBytes"
+style = "ByUnit"
+
+[[columns]]
+kind = "TcpPort"
+style = "BrightGreen"
+
+[[columns]]
+kind = "Command"
+style = "White"

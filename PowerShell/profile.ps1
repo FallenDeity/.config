@@ -61,6 +61,10 @@ else {
 # ============ Environment Setup ============
 $env:VIRTUAL_ENV_DISABLE_PROMPT = 1
 $env:PIP_REQUIRE_VIRTUALENV = 'true'
+$env:DFT_THEME = 'dark'
+
+# Catppuccin Mocha theme for fzf
+$env:FZF_DEFAULT_OPTS = "--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 --color=selected-bg:#45475a --multi"
 
 # ============ Shell Integration ============
 # direnv - disabled (kept for future enablement)
@@ -124,11 +128,6 @@ if (Get-Command vhs -ErrorAction SilentlyContinue) {
     vhs completion powershell | Out-String | Invoke-Expression
 }
 
-# broot (Tree navigator)
-if (Get-Command broot -ErrorAction SilentlyContinue) {
-    broot --print-shell-function powershell | Out-String | Invoke-Expression
-}
-
 # fd (Find)
 if (Get-Command fd -ErrorAction SilentlyContinue) {
     fd --gen-completions powershell | Out-String | Invoke-Expression
@@ -147,6 +146,11 @@ if (Get-Command delta -ErrorAction SilentlyContinue) {
 # Tailscale completion
 if (Get-Command tailscale -ErrorAction SilentlyContinue) {
     tailscale completion powershell 2>$null | Out-String | Invoke-Expression
+}
+
+# Zellij (Terminal multiplexer)
+if (Get-Command zellij -ErrorAction SilentlyContinue) {
+    zellij setup --generate-completion powershell | Out-String | Invoke-Expression
 }
 
 # ============ Helper Functions ============

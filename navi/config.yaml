@@ -1,0 +1,14 @@
+cheats:
+  paths:
+    - ~/.config/navi/cheats
+
+finder:
+  command: fzf
+
+style:
+  tag:
+    color: cyan
+  comment:
+    color: yellow
+  snippet:
+    color: white

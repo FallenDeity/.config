@@ -351,34 +351,61 @@ Initialize-GitSubmodules
 $repoConfigRoot = Split-Path -Parent $ScriptsRoot
 Write-Host "Config root: $repoConfigRoot" -ForegroundColor DarkGreen
 
-$repoPsmuxConfig = Join-Path $repoConfigRoot 'psmux\psmux.conf'
-$userPsmuxDir = Join-Path $HOME '.config\psmux'
-$userPsmuxConfig = Join-Path $userPsmuxDir 'psmux.conf'
-Ensure-Directory -Path $userPsmuxDir
-if (Test-Path $repoPsmuxConfig) {
-    $repoPsmuxFullPath = [System.IO.Path]::GetFullPath($repoPsmuxConfig)
-    $userPsmuxFullPath = [System.IO.Path]::GetFullPath($userPsmuxConfig)
-
-    if ($repoPsmuxFullPath -ieq $userPsmuxFullPath) {
-        Write-Host "PSMUX config already points at the rendered file: $userPsmuxConfig" -ForegroundColor DarkGreen
-    }
-    elseif (-not (Test-Path $userPsmuxConfig)) {
-        Copy-Item -Path $repoPsmuxConfig -Destination $userPsmuxConfig -Force
-        Write-Host "PSMUX config rendered to: $userPsmuxConfig" -ForegroundColor Green
-    }
-    else {
-        Write-Host "PSMUX config already exists; leaving it in place: $userPsmuxConfig" -ForegroundColor DarkGreen
-    }
+# Zellij config sync
+$repoZellijDir = Join-Path $repoConfigRoot 'zellij'
+$homeZellijDir = Join-Path $HOME '.config\zellij'
+if (Test-Path $repoZellijDir) {
+    Sync-ConfigDirectory -Source $repoZellijDir -Destination $homeZellijDir -Description 'Zellij config'
+    Set-ConfigEnvironmentVariable -Name 'ZELLIJ_CONFIG_DIR' -Path $homeZellijDir
 }
-else {
-    Write-Host "psmux config template not found: $repoPsmuxConfig" -ForegroundColor Yellow
+
+# Navi config and cheats sync
+$repoNaviDir = Join-Path $repoConfigRoot 'navi'
+$homeNaviDir = Join-Path $HOME '.config\navi'
+if (Test-Path $repoNaviDir) {
+    Sync-ConfigDirectory -Source $repoNaviDir -Destination $homeNaviDir -Description 'Navi config and cheats'
+    $homeNaviCheats = Join-Path $homeNaviDir 'cheats'
+    Set-ConfigEnvironmentVariable -Name 'NAVI_PATH' -Path $homeNaviCheats
+}
+
+# Tealdeer (tldr) config sync
+$repoTealdeerDir = Join-Path $repoConfigRoot 'tealdeer'
+$homeTealdeerDir = Join-Path $HOME '.config\tealdeer'
+if (Test-Path $repoTealdeerDir) {
+    Sync-ConfigDirectory -Source $repoTealdeerDir -Destination $homeTealdeerDir -Description 'Tealdeer config'
+}
+
+# Procs config sync
+$repoProcsDir = Join-Path $repoConfigRoot 'procs'
+$homeProcsDir = Join-Path $HOME '.config\procs'
+if (Test-Path $repoProcsDir) {
+    Sync-ConfigDirectory -Source $repoProcsDir -Destination $homeProcsDir -Description 'Procs config'
+}
+
+# Glow config sync
+$repoGlowDir = Join-Path $repoConfigRoot 'glow'
+$homeGlowDir = Join-Path $HOME '.config\glow'
+if (Test-Path $repoGlowDir) {
+    Sync-ConfigDirectory -Source $repoGlowDir -Destination $homeGlowDir -Description 'Glow config'
+}
+
+# Doggo config sync
+$repoDoggoDir = Join-Path $repoConfigRoot 'doggo'
+$homeDoggoDir = Join-Path $HOME '.config\doggo'
+if (Test-Path $repoDoggoDir) {
+    Sync-ConfigDirectory -Source $repoDoggoDir -Destination $homeDoggoDir -Description 'Doggo config'
 }
 
 # Set environment variables from repo config files
-Set-ConfigEnvironmentVariable -Name 'PSMUX_CONFIG_FILE' -Path $userPsmuxConfig
+Set-ConfigEnvironmentVariable -Name 'DFT_THEME' -Path 'dark'
 Set-ConfigEnvironmentVariable -Name 'BAT_CONFIG_PATH' -Path (Join-Path $repoConfigRoot 'bat\config')
 Set-ConfigEnvironmentVariable -Name 'EZA_CONFIG_DIR' -Path (Join-Path $repoConfigRoot 'eza')
 Set-ConfigEnvironmentVariable -Name 'YAZI_CONFIG_HOME' -Path (Join-Path $repoConfigRoot 'yazi')
+
+$fzfMochaOpts = '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 --color=selected-bg:#45475a --multi'
+[Environment]::SetEnvironmentVariable('FZF_DEFAULT_OPTS', $fzfMochaOpts, 'User')
+$env:FZF_DEFAULT_OPTS = $fzfMochaOpts
+
 
 # Handle dir colors and derived LS_COLORS/EZA_COLORS
 $repoDircolorsFile = Join-Path $repoConfigRoot 'dircolors\dircolors'

@@ -1,0 +1,64 @@
+% python, package-manager, uv
+# Create a virtual environment with uv
+uv venv
+
+# Create a virtual environment with specific Python version
+uv venv --python <python_version>
+
+# Install packages with uv into virtual environment
+uv pip install <package_name>
+
+# Install a standalone CLI tool globally with uv tool
+uv tool install <tool_name>
+
+# Run a CLI tool ephemerally without installing (like npx)
+uvx <tool_name>
+
+# Run script with inline dependencies (PEP 723)
+uv run <script_py>
+
+$ python_version: echo '3.11 3.12 3.13' | tr ' ' '\n'
+
+
+% python, linter, formatter, ruff
+# Check codebase for lint issues and auto-fix
+ruff check --fix .
+
+# Format all python code according to standard
+ruff format .
+
+# Check code and watch for file changes
+ruff check --watch .
+
+
+% python, dependency-management, poetry
+# Initialize a new Poetry project
+poetry init
+
+# Install project dependencies
+poetry install
+
+# Add a package to project dependencies
+poetry add <package_name>
+
+# Add a development dependency
+poetry add -D <package_name>
+
+# Run command inside poetry environment
+poetry run <command>
+
+
+% api, tui, http, posting
+# Launch interactive terminal TUI for API testing (Posting)
+posting
+
+
+% python, cli-tools, pipx
+# Install a Python CLI application isolated with pipx
+pipx install <package_name>
+
+# List installed pipx tools
+pipx list
+
+# Upgrade all pipx-installed applications
+pipx upgrade-all
