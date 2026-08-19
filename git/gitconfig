@@ -26,4 +26,5 @@
     sort = -committerdate
 
 [core]
-    autocrlf = false
+    autocrlf = true
+    ignorecase = true

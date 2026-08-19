@@ -158,16 +158,44 @@ function Ensure-UvAndTools {
         Write-Host 'uv already installed.' -ForegroundColor DarkGreen
     }
 
-    $uvTools = @('posting', 'poetry', 'ruff', 'black')
-    $listedTools = uv tool list 2>$null | Out-String
+    $uvTools = @(
+        @{ Name = 'posting' },
+        @{ Name = 'poetry' },
+        @{ Name = 'ruff' },
+        @{ Name = 'black' },
+        @{ Name = 'ipython'; With = 'catppuccin[pygments]' }
+    )
+    $listedTools = uv tool list --show-with 2>$null | Out-String
 
-    foreach ($tool in $uvTools) {
-        if ($listedTools -match "(?im)^$([regex]::Escape($tool))\b") {
+    foreach ($toolObj in $uvTools) {
+        $tool = $toolObj.Name
+        $withDep = $toolObj.With
+
+        $hasTool = $false
+        if ($withDep) {
+            $depPattern = ($withDep -replace '\[.*\]', '')
+            if ($listedTools -match "(?im)^$([regex]::Escape($tool))\b.*\[with:.*$([regex]::Escape($depPattern)).*\]") {
+                $hasTool = $true
+            }
+        }
+        else {
+            if ($listedTools -match "(?im)^$([regex]::Escape($tool))\b") {
+                $hasTool = $true
+            }
+        }
+
+        if ($hasTool) {
             Write-Host "uv tool exists: $tool" -ForegroundColor DarkGreen
         }
         else {
-            Write-Host "Installing uv tool: $tool"
-            uv tool install $tool
+            if ($withDep) {
+                Write-Host "Installing uv tool: $tool --with $withDep"
+                uv tool install $tool --with $withDep --force
+            }
+            else {
+                Write-Host "Installing uv tool: $tool"
+                uv tool install $tool
+            }
         }
     }
 }
@@ -189,6 +217,7 @@ $categoryCoreTools = @(
     'bind',
     'broot',
     'btop',
+    'bombardier',
     'clink',
     'curl',
     'delta',
@@ -208,6 +237,7 @@ $categoryCoreTools = @(
     'git-crypt',
     'glow',
     'grep',
+    'hyperfine',
     'ImageMagick',
     'ghostscript',
     'iperf3',
@@ -217,6 +247,7 @@ $categoryCoreTools = @(
     'lazygit',
     'less',
     'lf',
+    'make',
     'mediainfo',
     'neovim',
     'ngrok',
@@ -229,6 +260,7 @@ $categoryCoreTools = @(
     'sysinternals/psshutdown',
     'sysinternals/regjump',
     'sysinternals/sdelete',
+    'tokei',
     'touch',
     'tre-command',
     'ttyd',

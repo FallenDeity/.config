@@ -419,6 +419,14 @@ if (Test-Path $repoLazygitDir) {
     }
 }
 
+# IPython config sync
+$repoIpythonDir = Join-Path $repoConfigRoot 'ipython'
+$homeIpythonDir = Join-Path $HOME '.ipython'
+if (Test-Path $repoIpythonDir) {
+    Sync-ConfigDirectory -Source $repoIpythonDir -Destination $homeIpythonDir -Description 'IPython config'
+}
+
+
 # Ripgrep config generation
 $repoRipgrepDir = Join-Path $repoConfigRoot 'ripgrep'
 $repoRipgrepTemplate = Join-Path $repoRipgrepDir 'ripgreprc.template'

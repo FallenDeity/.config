@@ -243,6 +243,10 @@
         {
           "PackageIdentifier": "JAMSoftware.TreeSize.Free",
           "Version": "4.8.1.610"
+        },
+        {
+          "PackageIdentifier": "OBSProject.OBSStudio",
+          "Version": "32.2.1"
         }
       ],
       "SourceDetails": {
