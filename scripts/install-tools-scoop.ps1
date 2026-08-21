@@ -267,6 +267,7 @@ $categoryCoreTools = @(
     'sysinternals/sdelete',
     'tealdeer',
     'tokei',
+    'trippy',
     'ttyd',
     'unzip',
     'vhs',

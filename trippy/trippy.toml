@@ -1,0 +1,36 @@
+# Trippy 0.13.0 Configuration
+# Centrally managed configuration
+
+[trippy]
+mode = "tui"
+unprivileged = false
+
+[strategy]
+protocol = "icmp"
+addr-family = "ipv4-then-ipv6"
+min-round-duration = "1s"
+max-round-duration = "1s"
+grace-duration = "100ms"
+
+[dns]
+dns-resolve-method = "system"
+dns-timeout = "2s"
+
+[tui]
+tui-address-mode = "both"
+tui-max-samples = 256
+tui-refresh-rate = "100ms"
+tui-preserve-screen = true
+
+[theme-colors]
+bg-color = "#1e1e2e"
+border-color = "#6c7086"
+text-color = "#cdd6f4"
+tab-selected-text-color = "#89b4fa"
+hops-table-header-bg-color = "#313244"
+hops-table-header-text-color = "#cdd6f4"
+hops-table-row-active-text-color = "#a6e3a1"
+samples-chart-color = "#89b4fa"
+frequency-chart-color = "#cba6f7"
+hops-chart-selected-color = "#f9e2af"
+hops-chart-unselected-color = "#45475a"

@@ -396,6 +396,13 @@ if (Test-Path $repoDoggoDir) {
     Sync-ConfigDirectory -Source $repoDoggoDir -Destination $homeDoggoDir -Description 'Doggo config'
 }
 
+# Trippy config sync
+$repoTrippyDir = Join-Path $repoConfigRoot 'trippy'
+$homeTrippyDir = Join-Path $HOME '.config\trippy'
+if (Test-Path $repoTrippyDir) {
+    Sync-ConfigDirectory -Source $repoTrippyDir -Destination $homeTrippyDir -Description 'Trippy config'
+}
+
 # Set environment variables from repo config files
 Set-ConfigEnvironmentVariable -Name 'DFT_THEME' -Path 'dark'
 Set-ConfigEnvironmentVariable -Name 'BAT_CONFIG_PATH' -Path (Join-Path $repoConfigRoot 'bat\config')

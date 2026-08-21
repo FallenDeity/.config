@@ -65,6 +65,11 @@ psexec -s -i <command>
 psshutdown -k -t <seconds>
 
 
+# Force kill a process by name with PowerShell
+Stop-Process -Name "<process_name>" -Force
+
+# Force kill a process by PID with taskkill
+taskkill /F /PID <pid>
 
 
 % formatting, line-endings, dos2unix

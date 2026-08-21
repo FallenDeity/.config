@@ -21,6 +21,20 @@ $ record_type: echo 'A AAAA CNAME MX TXT NS SOA PTR' | tr ' ' '\n'
 $ nameserver: echo '1.1.1.1 8.8.8.8 9.9.9.9' | tr ' ' '\n'
 
 
+% traceroute, diagnostics, trippy
+# Interactive real-time network path tracing (Trippy)
+trip <host_or_ip>
+
+# Trace route with specific protocol (ICMP, UDP, TCP)
+trip <host_or_ip> -p <protocol>
+
+# Trace route with custom port
+trip <host_or_ip> -p tcp -P <port>
+
+$ protocol: echo 'icmp udp tcp' | tr ' ' '\n'
+$ port: echo '80 443 8080 8443 22 53' | tr ' ' '\n'
+
+
 % http, api, web, xh
 # Send HTTP GET request
 xh <url>
