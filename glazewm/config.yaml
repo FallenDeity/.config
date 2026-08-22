@@ -39,7 +39,7 @@ window_effects:
   focused_window:
     border:
       enabled: true
-      color: '#cba6f7' # Catppuccin Mauve
+      color: '#74c7ec' # Catppuccin Sapphire (High-contrast focused border)
     hide_title_bar:
       enabled: false
     corner_style:
@@ -50,7 +50,7 @@ window_effects:
   other_windows:
     border:
       enabled: true
-      color: '#45475a' # Catppuccin Surface1
+      color: '#313244' # Catppuccin Surface0 (Dimmed unfocused border)
     hide_title_bar:
       enabled: false
     corner_style:
