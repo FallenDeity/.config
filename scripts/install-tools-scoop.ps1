@@ -282,6 +282,7 @@ $categoryCoreTools = @(
     'pipx',
     'poppler',
     'PSFzf',
+    'extras/wezterm',
     'extras/vcredist2022'
 )
 

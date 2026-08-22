@@ -125,10 +125,6 @@
           "Version": "1.22.22"
         },
         {
-          "PackageIdentifier": "Alacritty.Alacritty",
-          "Version": "0.16.1"
-        },
-        {
           "PackageIdentifier": "Nvidia.CUDA",
           "Version": "13.2"
         },

@@ -68,12 +68,36 @@
         "startingDirectory": "%USERPROFILE%"
       },
       {
+        "guid": "{17b01b67-25e6-42d4-ba5f-1419363fbe56}",
+        "hidden": false,
+        "name": "MSYS2 (UCRT64)",
+        "icon": "ms-appdata:///roaming/icons/msys2.png",
+        "commandline": "C:\\msys64\\msys2_shell.cmd -defterm -here -no-start -ucrt64",
+        "startingDirectory": "%USERPROFILE%"
+      },
+      {
+        "guid": "{3cf4a4f8-1ef6-4d0c-a988-bb7e94eb6c0c}",
+        "hidden": false,
+        "name": "MSYS2 (MINGW64)",
+        "icon": "ms-appdata:///roaming/icons/msys2.png",
+        "commandline": "C:\\msys64\\msys2_shell.cmd -defterm -here -no-start -mingw64",
+        "startingDirectory": "%USERPROFILE%"
+      },
+      {
+        "guid": "{4cf5a4f8-1ef6-4d0c-a988-bb7e94eb6c0d}",
+        "hidden": false,
+        "name": "MSYS2 (CLANG64)",
+        "icon": "ms-appdata:///roaming/icons/msys2.png",
+        "commandline": "C:\\msys64\\msys2_shell.cmd -defterm -here -no-start -clang64",
+        "startingDirectory": "%USERPROFILE%"
+      },
+      {
         "guid": "{f5f522f0-9f95-4c0f-b5ce-96a36c4fca6f}",
         "hidden": false,
-        "name": "MSYS2",
+        "name": "MSYS2 (MSYS)",
         "icon": "ms-appdata:///roaming/icons/msys2.png",
-        "commandline": "C:\\msys64\\usr\\bin\\bash.exe -li",
-        "startingDirectory": "C:\\msys64\\home\\%USERNAME%"
+        "commandline": "C:\\msys64\\msys2_shell.cmd -defterm -here -no-start -msys",
+        "startingDirectory": "%USERPROFILE%"
       },
       {
         "guid": "{f0a87480-7e4f-4f6c-9fd0-c9ce9aee0b28}",

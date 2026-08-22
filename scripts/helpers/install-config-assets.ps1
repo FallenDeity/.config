@@ -80,11 +80,11 @@ function Install-WindowsTerminalSettings {
     Write-Host "Windows Terminal settings synced: $targetFile" -ForegroundColor Green
 }
 
-function Install-AlacrittyConfig {
-    Write-Host "`n==> Setting up Alacritty config" -ForegroundColor Cyan
-    $repoAlacrittyDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'alacritty'
-    $targetDir = Join-Path $env:APPDATA 'alacritty'
-    Sync-ConfigDirectory -Source $repoAlacrittyDir -Destination $targetDir -Description 'Alacritty config'
+function Install-WezTermConfig {
+    Write-Host "`n==> Setting up WezTerm config" -ForegroundColor Cyan
+    $repoWezTermDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'wezterm'
+    $targetDir = Join-Path $HOME '.config\wezterm'
+    Sync-ConfigDirectory -Source $repoWezTermDir -Destination $targetDir -Description 'WezTerm config'
 }
 
 function Install-Btop4winTheme {
@@ -114,5 +114,5 @@ function Install-Btop4winTheme {
 
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
-Install-AlacrittyConfig
+Install-WezTermConfig
 Install-Btop4winTheme
