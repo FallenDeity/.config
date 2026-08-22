@@ -93,7 +93,7 @@ function Install-GlazeWMConfig {
     $targetDir = Join-Path $HOME '.glzr\glazewm'
     Sync-ConfigDirectory -Source $repoGlazeWMDir -Destination $targetDir -Description 'GlazeWM config'
 
-    # Register GlazeWM service on startup using Shawl
+    # Ensure GlazeWM starts automatically on Windows login (Userspace Startup)
     $glazewmExe = $null
     if (Get-Command glazewm -ErrorAction SilentlyContinue) {
         $glazewmExe = (Get-Command glazewm).Source
@@ -101,16 +101,21 @@ function Install-GlazeWMConfig {
         $glazewmExe = "$HOME\scoop\shims\glazewm.exe"
     }
 
-    if ($glazewmExe -and (Get-Command shawl -ErrorAction SilentlyContinue)) {
-        $serviceExists = $null -ne (Get-Service -Name 'GlazeWM' -ErrorAction SilentlyContinue)
-        if (-not $serviceExists) {
-            Write-Host "Registering GlazeWM service via Shawl..." -ForegroundColor Cyan
-            & shawl add --name GlazeWM --restart --kill-process-tree --cwd $HOME -- $glazewmExe
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "GlazeWM service registered with Shawl." -ForegroundColor Green
-                Start-Service -Name 'GlazeWM' -ErrorAction SilentlyContinue
-            } else {
-                Write-Host "Note: Shawl service registration requires Administrator privileges." -ForegroundColor Yellow
+    if ($glazewmExe) {
+        $startupDir = [Environment]::GetFolderPath('Startup')
+        if ($startupDir -and (Test-Path $startupDir)) {
+            $shortcutPath = Join-Path $startupDir 'GlazeWM.lnk'
+            try {
+                $wsh = New-Object -ComObject WScript.Shell
+                $shortcut = $wsh.CreateShortcut($shortcutPath)
+                $shortcut.TargetPath = $glazewmExe
+                $shortcut.Description = 'GlazeWM Tiling Window Manager'
+                $shortcut.Save()
+                [System.Runtime.Interopservices.Marshal]::ReleaseComObject($shortcut) | Out-Null
+                [System.Runtime.Interopservices.Marshal]::ReleaseComObject($wsh) | Out-Null
+                Write-Host "GlazeWM startup shortcut enabled: $shortcutPath" -ForegroundColor Green
+            } catch {
+                Write-Host "Failed to create GlazeWM startup shortcut: $_" -ForegroundColor Yellow
             }
         }
     }

@@ -404,7 +404,9 @@ if (Test-Path $repoTrippyDir) {
 }
 
 # Set environment variables from repo config files
-Set-ConfigEnvironmentVariable -Name 'DFT_THEME' -Path 'dark'
+[Environment]::SetEnvironmentVariable('DFT_THEME', 'dark', 'User')
+$env:DFT_THEME = 'dark'
+Write-Host "DFT_THEME set (User): dark" -ForegroundColor Green
 Set-ConfigEnvironmentVariable -Name 'BAT_CONFIG_PATH' -Path (Join-Path $repoConfigRoot 'bat\config')
 Set-ConfigEnvironmentVariable -Name 'EZA_CONFIG_DIR' -Path (Join-Path $repoConfigRoot 'eza')
 Set-ConfigEnvironmentVariable -Name 'YAZI_CONFIG_HOME' -Path (Join-Path $repoConfigRoot 'yazi')
