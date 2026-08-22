@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Zebar Islands Theme</title>
-    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <link rel="stylesheet" type="text/css" href="./colors.css" id="theme-colors" />
+    <link rel="stylesheet" type="text/css" href="./styles.css" id="main-theme-styles" />
     <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
   </head>
   <body>
@@ -43,6 +44,34 @@
         const [output, setOutput] = useState(providers.outputMap);
         const [weather, setWeather] = useState(null);
         const [gpu, setGpu] = useState({ usage: 0, temp: 0 });
+        const [variantIdx, setVariantIdx] = useState(0);
+
+        async function rerollTheme() {
+          try {
+            let pal = null;
+            try {
+              const res = await fetch('./palette.json?t=' + Date.now());
+              if (res.ok) pal = await res.json();
+            } catch (fetchErr) {}
+
+            if (pal?.variants?.length) {
+              const nextIdx = (variantIdx + 1) % pal.variants.length;
+              setVariantIdx(nextIdx);
+              const [p, s] = pal.variants[nextIdx];
+              document.documentElement.style.setProperty('--theme-accent-primary', p);
+              document.documentElement.style.setProperty('--theme-accent-secondary', s);
+            }
+
+            try {
+              await zebar.shellExec('python', '%USERPROFILE%\\.glzr\\scripts\\sync-wallpaper-theme.py --reroll');
+            } catch (cmdErr) {}
+
+            const colorLink = document.getElementById('theme-colors');
+            if (colorLink) {
+              colorLink.href = './colors.css?t=' + Date.now();
+            }
+          } catch (e) {}
+        }
 
         useEffect(() => {
           providers.onOutput(() => setOutput({ ...providers.outputMap }));
@@ -99,19 +128,78 @@
           return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)}G`;
         }
 
-        function getProcessInfo(processName) {
-          if (!processName) return { icon: 'nf-fa-desktop', name: 'Desktop' };
-          const name = processName.toLowerCase();
-          if (name.includes('brave')) return { icon: 'nf-fa-brave', name: 'Brave' };
-          if (name.includes('chrome')) return { icon: 'nf-fa-chrome', name: 'Chrome' };
-          if (name.includes('firefox')) return { icon: 'nf-fa-firefox', name: 'Firefox' };
-          if (name.includes('discord')) return { icon: 'nf-fa-discord', name: 'Discord' };
-          if (name.includes('spotify')) return { icon: 'nf-fa-spotify', name: 'Spotify' };
-          if (name.includes('code') || name.includes('cursor')) return { icon: 'nf-fa-code', name: 'VS Code' };
-          if (name.includes('wezterm') || name.includes('terminal') || name.includes('powershell')) return { icon: 'nf-fa-terminal', name: 'Terminal' };
-          if (name.includes('antigravity')) return { icon: 'nf-fa-rocket', name: 'Antigravity' };
-          if (name.includes('steam')) return { icon: 'nf-fa-steam', name: 'Steam' };
-          return { icon: 'nf-md-application', name: processName };
+        const APP_ICONS = {
+          // Web Browsers
+          brave: 'nf-fa-compass',
+          chrome: 'nf-fa-chrome',
+          firefox: 'nf-fa-firefox',
+          zen: 'nf-fa-firefox',
+          edge: 'nf-fa-edge',
+          browser: 'nf-fa-globe',
+          
+          // Terminals & Shells
+          terminal: 'nf-fa-terminal',
+          powershell: 'nf-fa-terminal',
+          pwsh: 'nf-fa-terminal',
+          cmd: 'nf-fa-terminal',
+          wezterm: 'nf-fa-terminal',
+          alacritty: 'nf-fa-terminal',
+          kitty: 'nf-fa-terminal',
+          
+          // Code & Development
+          code: 'nf-cod-vscode',
+          cursor: 'nf-cod-vscode',
+          vscodium: 'nf-cod-vscode',
+          neovim: 'nf-custom-neovim',
+          nvim: 'nf-custom-neovim',
+          vim: 'nf-dev-vim',
+          git: 'nf-fa-git',
+          github: 'nf-fa-github',
+          antigravity: 'nf-fa-rocket',
+          
+          // Chat & Communication
+          discord: 'nf-fa-discord',
+          slack: 'nf-fa-slack',
+          telegram: 'nf-fa-telegram',
+          teams: 'nf-md-microsoft_teams',
+          whatsapp: 'nf-fa-whatsapp',
+          
+          // Media & Streaming
+          spotify: 'nf-fa-spotify',
+          vlc: 'nf-fa-film',
+          youtube: 'nf-fa-youtube',
+          music: 'nf-fa-music',
+          
+          // Gaming
+          steam: 'nf-fa-steam',
+          game: 'nf-fa-gamepad',
+          
+          // Productivity & System
+          obsidian: 'nf-fa-book',
+          notion: 'nf-fa-sticky_note',
+          explorer: 'nf-fa-folder',
+          files: 'nf-fa-folder',
+          settings: 'nf-fa-cog',
+          taskmgr: 'nf-fa-tasks',
+          btop: 'nf-fa-tasks',
+        };
+
+        function getProcessInfo(rawName) {
+          if (!rawName) return { icon: 'nf-fa-desktop', name: 'Desktop' };
+          const clean = rawName.replace(/\.exe$/i, '').trim();
+          const lower = clean.toLowerCase();
+
+          for (const [key, icon] of Object.entries(APP_ICONS)) {
+            if (lower === key || lower.includes(key) || key.includes(lower)) {
+              const formatted = clean.replace(/([a-z])([A-Z])/g, '$1 $2');
+              const name = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+              return { icon, name };
+            }
+          }
+
+          const formatted = clean.replace(/([a-z])([A-Z])/g, '$1 $2');
+          const name = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+          return { icon: 'nf-md-application', name };
         }
 
         const currentMedia = output.media?.currentSession;
@@ -130,7 +218,11 @@
           <div className="app">
             {/* Left Island */}
             <div className="island left-island">
-              <i className="logo nf nf-fa-windows"></i>
+              <button
+                className="theme-reroll-btn nf nf-fa-windows"
+                title="Click to Reroll Wallpaper Theme Palette"
+                onClick={rerollTheme}
+              ></button>
 
               {output.glazewm && (
                 <div className="workspaces">
@@ -186,7 +278,7 @@
               <div className="center-island-body">
                 {output.date && (
                   <div className="center-item clock-item">
-                    <i className="nf nf-md-clock_outline" style={{ color: '#cba6f7', marginRight: '6px' }}></i>
+                    <i className="nf nf-md-clock_outline clock-icon"></i>
                     <span className="clock-text">{output.date.formatted}</span>
                   </div>
                 )}
@@ -203,7 +295,7 @@
                 <div className="center-divider"></div>
 
                 <div className="center-item app-item">
-                  <i className={`nf ${processInfo.icon}`} style={{ color: '#74c7ec', marginRight: '6px' }}></i>
+                  <i className={`nf ${processInfo.icon} app-icon`}></i>
                   <span className="app-text">{processInfo.name}</span>
                 </div>
 
@@ -266,7 +358,7 @@
 
                 {gpu && (
                   <div className="stat gpu" title={`GPU Usage: ${gpu.usage}% | Temp: ${gpu.temp}°C`}>
-                    <i className="nf nf-md-expansion_card" style={{ color: '#89dceb' }}></i>
+                    <i className="nf nf-md-expansion_card"></i>
                     <span>{gpu.usage}%</span>
                     <span className="gpu-temp">{gpu.temp}°C</span>
                   </div>

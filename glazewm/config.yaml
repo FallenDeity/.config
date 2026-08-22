@@ -39,7 +39,7 @@ window_effects:
   focused_window:
     border:
       enabled: true
-      color: '#74c7ec' # Catppuccin Sapphire (High-contrast focused border)
+      color: '#4e79f7' # Catppuccin Sapphire (High-contrast focused border)
     hide_title_bar:
       enabled: false
     corner_style:

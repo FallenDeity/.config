@@ -1,76 +1,116 @@
 <#
 .SYNOPSIS
     Real-time wallpaper theme synchronizer for GlazeWM & Zebar.
-    Monitors TranscodedWallpaper for changes and updates themes automatically.
+    Monitors Windows TranscodedWallpaper and Wallpaper Engine config.json for changes.
 #>
 
 $ErrorActionPreference = 'SilentlyContinue'
 
-$themesDir = Join-Path $env:APPDATA 'Microsoft\Windows\Themes'
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$syncPy = Join-Path $scriptDir 'sync-wallpaper-theme.py'
-$installAssets = Join-Path $scriptDir 'install-config-assets.ps1'
+$helpersDir = $PSScriptRoot
+$sRoot = Split-Path -Parent $helpersDir
+$sPy = Join-Path $helpersDir 'sync-wallpaper-theme.py'
+$sAssets = Join-Path $helpersDir 'install-config-assets.ps1'
 
-function Update-ThemeFromWallpaper {
-    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Wallpaper changed! Updating theme colors..." -ForegroundColor Cyan
-    try {
-        if (Test-Path $syncPy) {
-            python $syncPy
-        }
-        if (Test-Path $installAssets) {
-            & $installAssets -ScriptsRoot (Split-Path -Parent $scriptDir)
-        }
-        
-        # Reload GlazeWM & Zebar
-        if (Get-Command glazewm -ErrorAction SilentlyContinue) {
-            glazewm command reload-config
-        }
-        Stop-Process -Name zebar -Force -ErrorAction SilentlyContinue
-        if (Get-Command glazewm -ErrorAction SilentlyContinue) {
-            glazewm command shell-exec zebar
-        }
-        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Theme synchronization complete!" -ForegroundColor Green
-    } catch {
-        Write-Host "Error updating theme: $_" -ForegroundColor Red
-    }
-}
-
-if (-not (Test-Path $themesDir)) {
-    Write-Host "Themes directory not found: $themesDir" -ForegroundColor Yellow
-    exit 1
-}
-
-Write-Host "Watching for wallpaper changes in: $themesDir" -ForegroundColor Cyan
-
-$watcher = New-Object System.IO.FileSystemWatcher
-$watcher.Path = $themesDir
-$watcher.Filter = "TranscodedWallpaper"
-$watcher.IncludeSubdirectories = $false
-$watcher.EnableRaisingEvents = $true
+$global:pendingSync = $false
+$global:lastEventTime = [DateTime]::MinValue
 
 $action = {
-    Start-Sleep -Milliseconds 600
-    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Wallpaper changed! Syncing theme..." -ForegroundColor Cyan
-    $sRoot = 'd:\projects\.config\scripts'
-    $sPy = Join-Path $sRoot 'helpers\sync-wallpaper-theme.py'
-    $sAssets = Join-Path $sRoot 'helpers\install-config-assets.ps1'
-    if (Test-Path $sPy) { python $sPy }
-    if (Test-Path $sAssets) { & $sAssets -ScriptsRoot $sRoot }
-    if (Get-Command glazewm -ErrorAction SilentlyContinue) {
-        glazewm command reload-config
-    }
-    Stop-Process -Name zebar -Force -ErrorAction SilentlyContinue
-    if (Get-Command glazewm -ErrorAction SilentlyContinue) {
-        glazewm command shell-exec zebar
-    }
-    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Wallpaper sync complete!" -ForegroundColor Green
+    $global:pendingSync = $true
+    $global:lastEventTime = [DateTime]::UtcNow
 }
 
-Register-ObjectEvent $watcher 'Changed' -Action $action | Out-Null
-Register-ObjectEvent $watcher 'Created' -Action $action | Out-Null
+# 1. Windows Wallpaper Watcher
+$themesDir = Join-Path $env:APPDATA 'Microsoft\Windows\Themes'
+if (Test-Path $themesDir) {
+    $winWatcher = New-Object System.IO.FileSystemWatcher
+    $winWatcher.Path = $themesDir
+    $winWatcher.Filter = "TranscodedWallpaper"
+    $winWatcher.NotifyFilter = [System.IO.NotifyFilters]'LastWrite, FileName, Size'
+    $winWatcher.EnableRaisingEvents = $true
+    Register-ObjectEvent $winWatcher 'Changed' -Action $action | Out-Null
+    Register-ObjectEvent $winWatcher 'Created' -Action $action | Out-Null
+    Register-ObjectEvent $winWatcher 'Renamed' -Action $action | Out-Null
+    Write-Host "Watching Windows wallpaper: $themesDir" -ForegroundColor Cyan
+}
+
+# 2. Wallpaper Engine Watcher
+$weDirs = @(
+    "${env:ProgramFiles(x86)}\Steam\steamapps\common\wallpaper_engine",
+    "$env:ProgramFiles\Steam\steamapps\common\wallpaper_engine"
+)
+
+foreach ($weDir in $weDirs) {
+    if (Test-Path $weDir) {
+        $weWatcher = New-Object System.IO.FileSystemWatcher
+        $weWatcher.Path = $weDir
+        $weWatcher.Filter = "*config.json*"
+        $weWatcher.NotifyFilter = [System.IO.NotifyFilters]'LastWrite, FileName, Size'
+        $weWatcher.EnableRaisingEvents = $true
+        Register-ObjectEvent $weWatcher 'Changed' -Action $action | Out-Null
+        Register-ObjectEvent $weWatcher 'Created' -Action $action | Out-Null
+        Register-ObjectEvent $weWatcher 'Renamed' -Action $action | Out-Null
+        Write-Host "Watching Wallpaper Engine: $weDir" -ForegroundColor Cyan
+        break
+    }
+}
 
 Write-Host "Dynamic wallpaper theme watcher is active." -ForegroundColor Green
 
+# Polling timestamp guard
+$lastWinTime = (Get-Item (Join-Path $themesDir "TranscodedWallpaper") -ErrorAction SilentlyContinue)?.LastWriteTime
+$lastWeTime = $null
+foreach ($weDir in $weDirs) {
+    $weFile = Join-Path $weDir "config.json"
+    if (Test-Path $weFile) {
+        $lastWeTime = (Get-Item $weFile).LastWriteTime
+        break
+    }
+}
+
 while ($true) {
-    Start-Sleep -Seconds 10
+    Start-Sleep -Milliseconds 400
+
+    # Backup file polling
+    $winFile = Join-Path $themesDir "TranscodedWallpaper"
+    if (Test-Path $winFile) {
+        $curWinTime = (Get-Item $winFile).LastWriteTime
+        if ($lastWinTime -and ($curWinTime -gt $lastWinTime)) {
+            $global:pendingSync = $true
+            $global:lastEventTime = [DateTime]::UtcNow
+        }
+        $lastWinTime = $curWinTime
+    }
+
+    foreach ($weDir in $weDirs) {
+        $weFile = Join-Path $weDir "config.json"
+        if (Test-Path $weFile) {
+            $curWeTime = (Get-Item $weFile).LastWriteTime
+            if ($lastWeTime -and ($curWeTime -gt $lastWeTime)) {
+                $global:pendingSync = $true
+                $global:lastEventTime = [DateTime]::UtcNow
+            }
+            $lastWeTime = $curWeTime
+        }
+    }
+
+    # Execute exactly once only after file writes have fully settled for 1.4s
+    if ($global:pendingSync) {
+        $elapsed = ([DateTime]::UtcNow - $global:lastEventTime).TotalMilliseconds
+        if ($elapsed -ge 1400) {
+            $global:pendingSync = $false
+            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Wallpaper change settled. Syncing theme once..." -ForegroundColor Cyan
+            
+            if (Test-Path $sPy) { python $sPy }
+            if (Test-Path $sAssets) { & $sAssets -ScriptsRoot $sRoot }
+            
+            if (Get-Command glazewm -ErrorAction SilentlyContinue) {
+                glazewm command wm-reload-config
+            }
+            Stop-Process -Name zebar -Force -ErrorAction SilentlyContinue
+            if (Get-Command glazewm -ErrorAction SilentlyContinue) {
+                glazewm command shell-exec zebar
+            }
+            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Wallpaper sync complete!" -ForegroundColor Green
+        }
+    }
 }

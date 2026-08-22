@@ -163,39 +163,38 @@ function Install-ZebarConfig {
 
 function Install-WallpaperWatcherStartup {
     Write-Host "`n==> Setting up Wallpaper Theme Watcher startup shortcut" -ForegroundColor Cyan
-    $watcherScript = Join-Path $ScriptsRoot "helpers\watch-wallpaper-theme.ps1"
-    if (-not (Test-Path $watcherScript)) {
-        return
-    }
-
+    $watcherScript = Join-Path $HOME '.glzr\scripts\watch-wallpaper-theme.ps1'
     $startupDir = [Environment]::GetFolderPath('Startup')
     if ($startupDir -and (Test-Path $startupDir)) {
         $shortcutPath = Join-Path $startupDir 'WallpaperThemeWatcher.lnk'
-        $pwshExe = $null
-        if (Get-Command pwsh -ErrorAction SilentlyContinue) {
-            $pwshExe = (Get-Command pwsh).Source
-        } elseif (Get-Command powershell -ErrorAction SilentlyContinue) {
-            $pwshExe = (Get-Command powershell).Source
-        }
+        $pwshExe = (Get-Command pwsh.exe -ErrorAction SilentlyContinue)?.Source
+        $psExe = if ($pwshExe) { $pwshExe } else { 'powershell.exe' }
 
-        if ($pwshExe) {
-            try {
-                $wsh = New-Object -ComObject WScript.Shell
-                $shortcut = $wsh.CreateShortcut($shortcutPath)
-                $shortcut.TargetPath = $pwshExe
-                $shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -NoProfile -File `"$watcherScript`""
-                $shortcut.Description = 'Dynamic Wallpaper Theme Watcher for GlazeWM and Zebar'
-                $shortcut.Save()
-                [System.Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut) | Out-Null
-                [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
-                Write-Host "Wallpaper Watcher startup shortcut enabled: $shortcutPath" -ForegroundColor Green
-            } catch {
-                Write-Host "Failed to create Wallpaper Watcher startup shortcut: $_" -ForegroundColor Yellow
-            }
+        try {
+            $wsh = New-Object -ComObject WScript.Shell
+            $shortcut = $wsh.CreateShortcut($shortcutPath)
+            $shortcut.TargetPath = $psExe
+            $shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -NoProfile -File `"$watcherScript`""
+            $shortcut.Description = 'Dynamic Wallpaper Theme Watcher for GlazeWM and Zebar'
+            $shortcut.WindowStyle = 7 # Minimized/Hidden
+            $shortcut.Save()
+            [System.Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut) | Out-Null
+            [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
+            Write-Host "Wallpaper Watcher startup shortcut enabled: $shortcutPath" -ForegroundColor Green
+        } catch {
+            Write-Host "Failed to create Wallpaper Watcher startup shortcut: $_" -ForegroundColor Yellow
         }
     }
 }
 
+function Install-GlzrScripts {
+    Write-Host "`n==> Setting up Glzr helper scripts" -ForegroundColor Cyan
+    $helpersSource = Join-Path $ScriptsRoot "helpers"
+    $targetDir = Join-Path $HOME '.glzr\scripts'
+    Sync-ConfigDirectory -Source $helpersSource -Destination $targetDir -Description 'Glzr scripts'
+}
+
+Install-GlzrScripts
 Sync-WallpaperTheme
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings

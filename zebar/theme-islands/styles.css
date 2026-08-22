@@ -1,25 +1,21 @@
 @import 'https://www.nerdfonts.com/assets/css/webfont.css';
-@import './colors.css';
 
 :root {
-  --mocha-base: rgba(30, 30, 46, 0.85);
-  --mocha-surface0: rgba(49, 50, 68, 0.85);
-  --mocha-surface1: #45475a;
-  --mocha-text: #cdd6f4;
-  --mocha-subtext: #a6adc8;
-  --mocha-sapphire: #74c7ec;
-  --mocha-peach: #fab387;
-  --mocha-mauve: #cba6f7;
-  --mocha-green: #a6e3a1;
-  --mocha-red: #f38ba8;
-  --mocha-yellow: #f9e2af;
+  /* Default semantic fallbacks */
+  --theme-accent-primary: #74c7ec;
+  --theme-accent-secondary: #fab387;
+  --theme-bg-island: rgba(30, 30, 46, 0.85);
+  --theme-bg-notch: #1e1e2e;
+  --theme-surface: rgba(49, 50, 68, 0.85);
+  --theme-text: #cdd6f4;
+  --theme-text-muted: rgba(205, 214, 244, 0.65);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'MesloLGS Nerd Font', sans-serif;
-  color: var(--mocha-text);
+  color: var(--theme-text);
   background: transparent;
   overflow: hidden;
 }
@@ -38,20 +34,20 @@ body {
   display: none !important;
 }
 
-/* Floating Islands */
+/* Floating Islands (Tone 1 - Primary Accent Theme) */
 .island {
-  background: var(--mocha-base);
+  background: var(--theme-bg-island);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
   padding: 3px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   height: 34px;
 }
 
-/* Center Notch Container */
+/* Center Notch Container (Tone 2 - Secondary Accent Contrast) */
 .center-island-container {
   position: absolute;
   left: 50%;
@@ -77,11 +73,11 @@ body {
 }
 
 .notch-wing path {
-  fill: var(--mocha-notch, #1e1e2e);
+  fill: var(--theme-bg-notch);
 }
 
 .center-island-body {
-  background: var(--mocha-notch, #1e1e2e);
+  background: var(--theme-bg-notch);
   height: 36px;
   display: flex;
   align-items: center;
@@ -103,11 +99,15 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-.clock-text { color: var(--mocha-text); }
-.weather-text { color: var(--mocha-yellow); font-size: 12px; font-weight: 600; }
-.app-text { color: var(--mocha-sapphire); font-weight: 700; font-size: 12px; }
+.clock-icon { color: var(--theme-text-muted); margin-right: 6px; font-size: 13px; }
+.clock-text { color: var(--theme-text); }
+.weather-text { color: var(--theme-text-muted); font-size: 12px; font-weight: 600; }
 
-/* Media Card */
+/* Center Notch Elements (Tone 2 - Secondary Accent) */
+.app-icon { color: var(--theme-accent-secondary); margin-right: 6px; font-size: 13px; }
+.app-text { color: var(--theme-accent-secondary); font-weight: 700; font-size: 12px; }
+
+/* Media Card (Tone 2 - Secondary Accent) */
 .media-card {
   display: flex;
   align-items: center;
@@ -116,7 +116,7 @@ body {
 }
 
 .media-icon {
-  color: var(--mocha-red);
+  color: var(--theme-accent-secondary);
   font-size: 13px;
   animation: pulse 2s infinite ease-in-out;
 }
@@ -133,7 +133,7 @@ body {
   text-overflow: ellipsis;
   font-size: 11px;
   font-weight: 600;
-  color: var(--mocha-text);
+  color: var(--theme-text);
 }
 
 .media-buttons {
@@ -145,22 +145,35 @@ body {
 .media-btn {
   background: transparent;
   border: none;
-  color: var(--mocha-text);
+  color: var(--theme-text-muted);
   cursor: pointer;
   padding: 2px 4px;
   border-radius: 4px;
   transition: 0.2s;
   font-size: 10px;
 }
-.media-btn:hover { background: rgba(255,255,255,0.1); color: var(--mocha-sapphire); }
+.media-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--theme-accent-secondary); }
 
-/* Left WM / Distro */
-.logo {
-  color: var(--mocha-peach);
+/* Left WM / Distro (Tone 1 - Primary Accent) */
+.theme-reroll-btn {
+  background: transparent;
+  border: none;
+  color: var(--theme-accent-primary);
   font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-reroll-btn:hover {
+  transform: scale(1.2) rotate(15deg);
+  filter: drop-shadow(0 0 8px var(--theme-accent-primary));
 }
 
-/* Workspaces (Smooth Dots & Expanding Capsule Pill) */
+/* Workspaces (Tone 1 - Primary Accent) */
 .workspaces {
   display: flex;
   align-items: center;
@@ -187,15 +200,15 @@ body {
 }
 
 .workspace.focused {
-  background: var(--mocha-peach);
+  background: var(--theme-accent-primary);
   width: 24px;
   height: 8px;
   border-radius: 9999px;
-  box-shadow: 0 0 10px var(--mocha-peach);
+  box-shadow: 0 0 10px var(--theme-accent-primary);
 }
 
 .binding-mode {
-  background: var(--mocha-red);
+  background: var(--theme-accent-primary);
   color: #11111b;
   border: none;
   border-radius: 6px;
@@ -206,7 +219,7 @@ body {
 }
 
 .paused-button {
-  background: var(--mocha-yellow);
+  background: var(--theme-accent-secondary);
   color: #11111b;
   border: none;
   border-radius: 6px;
@@ -219,17 +232,17 @@ body {
 .tiling-direction {
   background: transparent;
   border: none;
-  color: var(--mocha-subtext);
+  color: var(--theme-text-muted);
   font-size: 16px;
   cursor: pointer;
   padding: 0 2px;
   transition: color 0.2s;
 }
 .tiling-direction:hover {
-  color: var(--mocha-peach);
+  color: var(--theme-accent-primary);
 }
 
-/* Right Hardware Stats Group */
+/* Right Hardware Stats Group (Tone 1 - Primary Accent) */
 .stat-group {
   display: flex;
   align-items: center;
@@ -242,6 +255,7 @@ body {
   gap: 5px;
   font-size: 11px;
   font-weight: 600;
+  color: var(--theme-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -258,13 +272,17 @@ body {
   white-space: nowrap;
 }
 
-.stat.net i { color: var(--mocha-sapphire); font-size: 12px; }
-.stat.ram i { color: var(--mocha-green); font-size: 12px; }
-.stat.cpu i { color: var(--mocha-yellow); font-size: 12px; }
-.stat.gpu i { color: var(--mocha-sapphire); font-size: 13px; }
+.stat i {
+  color: var(--theme-accent-primary);
+  font-size: 12px;
+}
+
+.stat.gpu i {
+  font-size: 13px;
+}
 
 .gpu-temp {
-  color: var(--mocha-peach);
+  color: var(--theme-accent-primary);
   font-size: 10px;
   font-weight: 700;
   margin-left: 2px;

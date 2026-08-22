@@ -3,7 +3,7 @@
   "name": "theme-islands",
   "version": "1.0.0",
   "description": "3 separated floating islands with dot workspaces",
-  "tags": ["topbar", "glazewm", "catppuccin"],
+  "tags": ["topbar", "glazewm"],
   "previewImages": [],
   "repositoryUrl": "",
   "widgets": [
@@ -15,7 +15,7 @@
       "focused": false,
       "resizable": true,
       "transparent": true,
-      "includeFiles": ["*.html", "*.css"],
+      "includeFiles": ["*.html", "*.css", "*.json"],
       "caching": {
         "defaultDuration": 604800,
         "rules": []
@@ -24,6 +24,10 @@
         "shellCommands": [
           {
             "program": "nvidia-smi",
+            "argsRegex": ".*"
+          },
+          {
+            "program": "python",
             "argsRegex": ".*"
           }
         ]

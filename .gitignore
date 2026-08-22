@@ -1,0 +1,10 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Scratch & Editor artifacts
+scratch/
+.vscode/
+.idea/
+*.log
