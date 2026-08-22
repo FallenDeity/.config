@@ -87,6 +87,35 @@ function Install-WezTermConfig {
     Sync-ConfigDirectory -Source $repoWezTermDir -Destination $targetDir -Description 'WezTerm config'
 }
 
+function Install-GlazeWMConfig {
+    Write-Host "`n==> Setting up GlazeWM config" -ForegroundColor Cyan
+    $repoGlazeWMDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'glazewm'
+    $targetDir = Join-Path $HOME '.glzr\glazewm'
+    Sync-ConfigDirectory -Source $repoGlazeWMDir -Destination $targetDir -Description 'GlazeWM config'
+
+    # Register GlazeWM service on startup using Shawl
+    $glazewmExe = $null
+    if (Get-Command glazewm -ErrorAction SilentlyContinue) {
+        $glazewmExe = (Get-Command glazewm).Source
+    } elseif (Test-Path "$HOME\scoop\shims\glazewm.exe") {
+        $glazewmExe = "$HOME\scoop\shims\glazewm.exe"
+    }
+
+    if ($glazewmExe -and (Get-Command shawl -ErrorAction SilentlyContinue)) {
+        $serviceExists = $null -ne (Get-Service -Name 'GlazeWM' -ErrorAction SilentlyContinue)
+        if (-not $serviceExists) {
+            Write-Host "Registering GlazeWM service via Shawl..." -ForegroundColor Cyan
+            & shawl add --name GlazeWM --restart --kill-process-tree --cwd $HOME -- $glazewmExe
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "GlazeWM service registered with Shawl." -ForegroundColor Green
+                Start-Service -Name 'GlazeWM' -ErrorAction SilentlyContinue
+            } else {
+                Write-Host "Note: Shawl service registration requires Administrator privileges." -ForegroundColor Yellow
+            }
+        }
+    }
+}
+
 function Install-Btop4winTheme {
     Write-Host "`n==> Setting up btop4win config" -ForegroundColor Cyan
 
@@ -115,4 +144,5 @@ function Install-Btop4winTheme {
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
 Install-WezTermConfig
+Install-GlazeWMConfig
 Install-Btop4winTheme

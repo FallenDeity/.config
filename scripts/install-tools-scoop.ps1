@@ -283,6 +283,8 @@ $categoryCoreTools = @(
     'poppler',
     'PSFzf',
     'extras/wezterm',
+    'extras/glazewm',
+    'extras/shawl',
     'extras/vcredist2022'
 )
 
