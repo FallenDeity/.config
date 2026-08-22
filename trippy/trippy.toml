@@ -1,6 +1,3 @@
-# Trippy 0.13.0 Configuration
-# Centrally managed configuration
-
 [trippy]
 mode = "tui"
 unprivileged = false

@@ -1,0 +1,271 @@
+@import 'https://www.nerdfonts.com/assets/css/webfont.css';
+@import './colors.css';
+
+:root {
+  --mocha-base: rgba(30, 30, 46, 0.85);
+  --mocha-surface0: rgba(49, 50, 68, 0.85);
+  --mocha-surface1: #45475a;
+  --mocha-text: #cdd6f4;
+  --mocha-subtext: #a6adc8;
+  --mocha-sapphire: #74c7ec;
+  --mocha-peach: #fab387;
+  --mocha-mauve: #cba6f7;
+  --mocha-green: #a6e3a1;
+  --mocha-red: #f38ba8;
+  --mocha-yellow: #f9e2af;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'MesloLGS Nerd Font', sans-serif;
+  color: var(--mocha-text);
+  background: transparent;
+  overflow: hidden;
+}
+
+#root { height: 100vh; width: 100vw; background: transparent; }
+
+.app {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2px 12px 0 12px;
+  height: 100%;
+}
+
+.app.fullscreen-hidden {
+  display: none !important;
+}
+
+/* Floating Islands */
+.island {
+  background: var(--mocha-base);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 3px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  height: 34px;
+}
+
+/* Center Notch Container */
+.center-island-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  z-index: 10;
+  opacity: 0.85;
+}
+
+.notch-wing {
+  display: block;
+  flex-shrink: 0;
+}
+
+.notch-wing.left-wing {
+  margin-right: -1px;
+}
+
+.notch-wing.right-wing {
+  margin-left: -1px;
+}
+
+.notch-wing path {
+  fill: var(--mocha-notch, #1e1e2e);
+}
+
+.center-island-body {
+  background: var(--mocha-notch, #1e1e2e);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px;
+  border-bottom: none;
+}
+
+.center-item {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.center-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.clock-text { color: var(--mocha-text); }
+.weather-text { color: var(--mocha-yellow); font-size: 12px; font-weight: 600; }
+.app-text { color: var(--mocha-sapphire); font-weight: 700; font-size: 12px; }
+
+/* Media Card */
+.media-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 22vw;
+}
+
+.media-icon {
+  color: var(--mocha-red);
+  font-size: 13px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.media-title {
+  max-width: 14vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mocha-text);
+}
+
+.media-buttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.media-btn {
+  background: transparent;
+  border: none;
+  color: var(--mocha-text);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: 0.2s;
+  font-size: 10px;
+}
+.media-btn:hover { background: rgba(255,255,255,0.1); color: var(--mocha-sapphire); }
+
+/* Left WM / Distro */
+.logo {
+  color: var(--mocha-peach);
+  font-size: 16px;
+}
+
+/* Workspaces (Smooth Dots & Expanding Capsule Pill) */
+.workspaces {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.workspace {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8px;
+  width: 8px;
+  border-radius: 9999px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.workspace.displayed {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.workspace.focused {
+  background: var(--mocha-peach);
+  width: 24px;
+  height: 8px;
+  border-radius: 9999px;
+  box-shadow: 0 0 10px var(--mocha-peach);
+}
+
+.binding-mode {
+  background: var(--mocha-red);
+  color: #11111b;
+  border: none;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.paused-button {
+  background: var(--mocha-yellow);
+  color: #11111b;
+  border: none;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tiling-direction {
+  background: transparent;
+  border: none;
+  color: var(--mocha-subtext);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 2px;
+  transition: color 0.2s;
+}
+.tiling-direction:hover {
+  color: var(--mocha-peach);
+}
+
+/* Right Hardware Stats Group */
+.stat-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat.net {
+  gap: 4px;
+}
+
+.net-down, .net-up {
+  display: inline-flex;
+  align-items: center;
+  min-width: 32px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.stat.net i { color: var(--mocha-sapphire); font-size: 12px; }
+.stat.ram i { color: var(--mocha-green); font-size: 12px; }
+.stat.cpu i { color: var(--mocha-yellow); font-size: 12px; }
+.stat.gpu i { color: var(--mocha-sapphire); font-size: 13px; }
+
+.gpu-temp {
+  color: var(--mocha-peach);
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 2px;
+}

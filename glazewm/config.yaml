@@ -1,6 +1,6 @@
 general:
   # Commands to run when the WM has started.
-  startup_commands: []
+  startup_commands: ['shell-exec zebar']
 
   # Commands to run just before the WM is shutdown.
   shutdown_commands: []
@@ -29,7 +29,7 @@ gaps:
   scale_with_dpi: true
   inner_gap: '8px'
   outer_gap:
-    top: '8px'
+    top: '42px'
     right: '8px'
     bottom: '8px'
     left: '8px'
@@ -64,7 +64,7 @@ window_behavior:
       centered: true
       shown_on_top: false
     fullscreen:
-      maximized: false
+      maximized: true
       shown_on_top: false
 
 workspaces:
@@ -162,9 +162,9 @@ keybindings:
   - commands: ['resize --height -2%']
     bindings: ['alt+i']
 
-  # Enter resize mode
+  # Enter resize mode (changed to alt+e to avoid clash with NVIDIA performance overlay)
   - commands: ['wm-enable-binding-mode --name resize']
-    bindings: ['alt+r']
+    bindings: ['alt+e']
 
   # Window state management
   - commands: ['toggle-tiling-direction']

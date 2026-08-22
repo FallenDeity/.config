@@ -1,0 +1,12 @@
+/* Dynamic Matugen Wallpaper Palette */
+:root {
+  --mocha-base: rgba(30, 30, 46, 0.85);
+  --mocha-notch: rgb(45, 46, 51);
+  --mocha-surface0: rgba(49, 50, 68, 0.85);
+  --mocha-peach: #b5c4ff;
+  --mocha-sapphire: #c1c5dd;
+  --mocha-mauve: #e2bbdb;
+  --mocha-green: #a6e3a1;
+  --mocha-yellow: #f9e2af;
+  --mocha-red: #f38ba8;
+}

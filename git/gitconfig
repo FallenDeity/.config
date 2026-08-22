@@ -1,5 +1,3 @@
-# Generic Git settings included from global ~/.gitconfig
-
 [pull]
     ff = only
 

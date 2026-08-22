@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zebar Islands Theme</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect } from 'https://esm.sh/react@18?dev';
+      import { createRoot } from 'https://esm.sh/react-dom@18/client?dev';
+      import * as zebar from 'https://esm.sh/zebar@3.0';
+
+      const providers = zebar.createProviderGroup({
+        network: { type: 'network', refreshInterval: '2000' },
+        glazewm: { type: 'glazewm' },
+        cpu: { type: 'cpu', refreshInterval: '1000' },
+        date: { type: 'date', formatting: 'EEE d MMM  HH:mm' },
+        memory: { type: 'memory', refreshInterval: '2000' },
+        media: { type: 'media' },
+      });
+
+      createRoot(document.getElementById('root')).render(<App />);
+
+      function getWeatherIcon(desc) {
+        const hour = new Date().getHours();
+        const isNight = hour < 6 || hour >= 19;
+        if (!desc) return isNight ? '🌙' : '⛅';
+        const d = desc.toLowerCase();
+        if (d.includes('sun') || d.includes('clear')) return isNight ? '🌙' : '☀️';
+        if (d.includes('rain') || d.includes('drizzle') || d.includes('shower')) return '🌧️';
+        if (d.includes('thunder') || d.includes('storm')) return '⛈️';
+        if (d.includes('snow') || d.includes('ice') || d.includes('sleet')) return '❄️';
+        if (d.includes('fog') || d.includes('mist')) return '🌫️';
+        if (d.includes('cloud') || d.includes('overcast')) return isNight ? '☁️' : '⛅';
+        return isNight ? '🌙' : '⛅';
+      }
+
+      function App() {
+        const [output, setOutput] = useState(providers.outputMap);
+        const [weather, setWeather] = useState(null);
+        const [gpu, setGpu] = useState({ usage: 0, temp: 0 });
+
+        useEffect(() => {
+          providers.onOutput(() => setOutput({ ...providers.outputMap }));
+        }, []);
+
+        useEffect(() => {
+          function fetchWeather() {
+            fetch('https://wttr.in/?format=j1')
+              .then(res => res.json())
+              .then(data => {
+                const cond = data?.current_condition?.[0];
+                if (cond) {
+                  const temp = cond.temp_C;
+                  const desc = cond.weatherDesc?.[0]?.value || '';
+                  setWeather(`${getWeatherIcon(desc)} ${temp}°C`);
+                }
+              })
+              .catch(() => setWeather(null));
+          }
+          fetchWeather();
+          const timer = setInterval(fetchWeather, 900000);
+          return () => clearInterval(timer);
+        }, []);
+
+        useEffect(() => {
+          let active = true;
+          async function fetchGpu() {
+            try {
+              const res = await zebar.shellExec('nvidia-smi', '--query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits');
+              if (res?.stdout && active) {
+                const parts = res.stdout.trim().split(',');
+                if (parts.length >= 2) {
+                  setGpu({
+                    usage: parseInt(parts[0].trim(), 10) || 0,
+                    temp: parseInt(parts[1].trim(), 10) || 0,
+                  });
+                }
+              }
+            } catch (e) {}
+          }
+          fetchGpu();
+          const timer = setInterval(fetchGpu, 2000);
+          return () => {
+            active = false;
+            clearInterval(timer);
+          };
+        }, []);
+
+        function formatSpeed(measure) {
+          if (!measure) return '0K';
+          const bytes = typeof measure.bytes === 'number' ? measure.bytes : 0;
+          if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)}K`;
+          if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)}M`;
+          return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)}G`;
+        }
+
+        function getProcessInfo(processName) {
+          if (!processName) return { icon: 'nf-fa-desktop', name: 'Desktop' };
+          const name = processName.toLowerCase();
+          if (name.includes('brave')) return { icon: 'nf-fa-brave', name: 'Brave' };
+          if (name.includes('chrome')) return { icon: 'nf-fa-chrome', name: 'Chrome' };
+          if (name.includes('firefox')) return { icon: 'nf-fa-firefox', name: 'Firefox' };
+          if (name.includes('discord')) return { icon: 'nf-fa-discord', name: 'Discord' };
+          if (name.includes('spotify')) return { icon: 'nf-fa-spotify', name: 'Spotify' };
+          if (name.includes('code') || name.includes('cursor')) return { icon: 'nf-fa-code', name: 'VS Code' };
+          if (name.includes('wezterm') || name.includes('terminal') || name.includes('powershell')) return { icon: 'nf-fa-terminal', name: 'Terminal' };
+          if (name.includes('antigravity')) return { icon: 'nf-fa-rocket', name: 'Antigravity' };
+          if (name.includes('steam')) return { icon: 'nf-fa-steam', name: 'Steam' };
+          return { icon: 'nf-md-application', name: processName };
+        }
+
+        const currentMedia = output.media?.currentSession;
+        const processInfo = getProcessInfo(output.glazewm?.focusedContainer?.processName);
+
+        const isFullscreen = output.glazewm?.hasFullscreenWindow ||
+          output.glazewm?.focusedContainer?.state?.type === 'fullscreen' ||
+          output.glazewm?.focusedWorkspace?.children?.some(c => c.state?.type === 'fullscreen') ||
+          output.glazewm?.currentWorkspaces?.some(ws => ws.children?.some(c => c.state?.type === 'fullscreen'));
+
+        if (isFullscreen) {
+          return <div className="app fullscreen-hidden"></div>;
+        }
+
+        return (
+          <div className="app">
+            {/* Left Island */}
+            <div className="island left-island">
+              <i className="logo nf nf-fa-windows"></i>
+
+              {output.glazewm && (
+                <div className="workspaces">
+                  {output.glazewm.currentWorkspaces.map(ws => (
+                    <button
+                      key={ws.name}
+                      className={`workspace ${ws.hasFocus ? 'focused' : ''} ${ws.isDisplayed ? 'displayed' : ''}`}
+                      onClick={() => output.glazewm.runCommand(`focus --workspace ${ws.name}`)}
+                      title={`Workspace ${ws.displayName ?? ws.name}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {output.glazewm?.bindingModes?.map(mode => (
+                <button
+                  key={mode.name}
+                  className="binding-mode"
+                  onClick={() => output.glazewm.runCommand(`wm-disable-binding-mode --name ${mode.name}`)}
+                >
+                  {mode.displayName ?? mode.name}
+                </button>
+              ))}
+
+              {output.glazewm?.isPaused && (
+                <button
+                  className="paused-button"
+                  onClick={() => output.glazewm.runCommand('wm-toggle-pause')}
+                >
+                  PAUSED
+                </button>
+              )}
+
+              {output.glazewm && (
+                <button
+                  className={`tiling-direction nf ${
+                    output.glazewm.tilingDirection === 'horizontal'
+                      ? 'nf-md-swap_horizontal'
+                      : 'nf-md-swap_vertical'
+                  }`}
+                  title={`Tiling Direction: ${output.glazewm.tilingDirection}`}
+                  onClick={() => output.glazewm.runCommand('toggle-tiling-direction')}
+                ></button>
+              )}
+            </div>
+
+            {/* Center Island with SVG S-curve Wings: Date + Weather + App Badge + Media */}
+            <div className="center-island-container">
+              <svg className="notch-wing left-wing" width="36" height="36" viewBox="0 0 36 36">
+                <path d="M 0 0 C 16 0 16 36 36 36 L 36 0 Z" />
+              </svg>
+
+              <div className="center-island-body">
+                {output.date && (
+                  <div className="center-item clock-item">
+                    <i className="nf nf-md-clock_outline" style={{ color: '#cba6f7', marginRight: '6px' }}></i>
+                    <span className="clock-text">{output.date.formatted}</span>
+                  </div>
+                )}
+
+                {weather && (
+                  <>
+                    <div className="center-divider"></div>
+                    <div className="center-item weather-item">
+                      <span className="weather-text">{weather}</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="center-divider"></div>
+
+                <div className="center-item app-item">
+                  <i className={`nf ${processInfo.icon}`} style={{ color: '#74c7ec', marginRight: '6px' }}></i>
+                  <span className="app-text">{processInfo.name}</span>
+                </div>
+
+                {currentMedia && (
+                  <>
+                    <div className="center-divider"></div>
+                    <div className="center-item media-card">
+                      <i className="media-icon nf nf-md-music_note"></i>
+                      <span
+                        className="media-title"
+                        title={`${currentMedia.artist ? currentMedia.artist + ' - ' : ''}${currentMedia.title}`}
+                      >
+                        {currentMedia.artist ? `${currentMedia.artist} - ` : ''}{currentMedia.title || 'Playing'}
+                      </span>
+                      <div className="media-buttons">
+                        <button className="media-btn" title="Previous" onClick={() => output.media.previous()}>
+                          <i className="nf nf-md-skip_previous"></i>
+                        </button>
+                        <button className="media-btn" title="Play/Pause" onClick={() => output.media.togglePlayPause()}>
+                          <i className={`nf ${currentMedia.isPlaying ? 'nf-md-pause' : 'nf-md-play'}`}></i>
+                        </button>
+                        <button className="media-btn" title="Next" onClick={() => output.media.next()}>
+                          <i className="nf nf-md-skip_next"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <svg className="notch-wing right-wing" width="36" height="36" viewBox="0 0 36 36">
+                <path d="M 0 36 C 20 36 20 0 36 0 L 0 0 Z" />
+              </svg>
+            </div>
+
+            {/* Right Island: Full Hardware Telemetry Deck */}
+            <div className="island right-island">
+              <div className="stat-group">
+                {output.network && (
+                  <div className="stat net" title="Network Speed">
+                    <i className="nf nf-fa-wifi"></i>
+                    <span className="net-down">↓{formatSpeed(output.network.traffic?.received)}</span>
+                    <span className="net-up">↑{formatSpeed(output.network.traffic?.transmitted)}</span>
+                  </div>
+                )}
+
+                {output.memory && (
+                  <div className="stat ram" title="RAM Usage">
+                    <i className="nf nf-fa-memory"></i>
+                    <span>{Math.round(output.memory.usage)}%</span>
+                  </div>
+                )}
+
+                {output.cpu && (
+                  <div className="stat cpu" title="CPU Usage">
+                    <i className="nf nf-oct-cpu"></i>
+                    <span>{Math.round(output.cpu.usage)}%</span>
+                  </div>
+                )}
+
+                {gpu && (
+                  <div className="stat gpu" title={`GPU Usage: ${gpu.usage}% | Temp: ${gpu.temp}°C`}>
+                    <i className="nf nf-md-expansion_card" style={{ color: '#89dceb' }}></i>
+                    <span>{gpu.usage}%</span>
+                    <span className="gpu-temp">{gpu.temp}°C</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    </script>
+  </body>
+</html>

@@ -201,6 +201,41 @@ function Ensure-UvAndTools {
     }
 }
 
+function Ensure-CargoAndTools {
+    Write-Step 'Ensuring Cargo and Cargo-managed tools'
+
+    if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
+        Write-Host 'Cargo not found; ensure Rust toolchain is installed.' -ForegroundColor Yellow
+        return
+    }
+
+    $cargoTools = @(
+        'matugen',
+        'cargo-binstall',
+        'cargo-update'
+    )
+
+    $installedList = @(cargo install --list 2>$null | Out-String)
+
+    foreach ($tool in $cargoTools) {
+        if ($installedList -match "(?im)^$([regex]::Escape($tool))\s+v") {
+            Write-Host "Cargo tool exists: $tool" -ForegroundColor DarkGreen
+        }
+        else {
+            Write-Host "Installing Cargo tool: $tool"
+            if (Get-Command cargo-binstall -ErrorAction SilentlyContinue) {
+                cargo binstall $tool --no-confirm 2>$null
+                if ($LASTEXITCODE -ne 0) {
+                    cargo install $tool
+                }
+            }
+            else {
+                cargo install $tool
+            }
+        }
+    }
+}
+
 Ensure-ScoopInstalled
 
 Write-Step 'Updating Scoop and bucket manifests'
@@ -284,6 +319,7 @@ $categoryCoreTools = @(
     'PSFzf',
     'extras/wezterm',
     'extras/glazewm',
+    'extras/zebar',
     'extras/shawl',
     'extras/vcredist2022'
 )
@@ -302,6 +338,7 @@ Ensure-ScoopPackages -Packages $categoryFonts
 
 Ensure-GhExtensions
 Ensure-UvAndTools
+Ensure-CargoAndTools
 
 Write-Step 'Ensuring PowerShell modules from PSGallery'
 $psModules = @(

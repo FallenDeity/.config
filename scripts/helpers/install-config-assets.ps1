@@ -146,8 +146,61 @@ function Install-Btop4winTheme {
     Write-Host "btop config synced to: $btopPrefix" -ForegroundColor Green
 }
 
+function Sync-WallpaperTheme {
+    Write-Host "`n==> Syncing theme palette from current wallpaper" -ForegroundColor Cyan
+    $syncScript = Join-Path $ScriptsRoot "helpers\sync-wallpaper-theme.py"
+    if (Test-Path $syncScript) {
+        python $syncScript
+    }
+}
+
+function Install-ZebarConfig {
+    Write-Host "`n==> Setting up Zebar config" -ForegroundColor Cyan
+    $repoZebarDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'zebar'
+    $targetDir = Join-Path $HOME '.glzr\zebar'
+    Sync-ConfigDirectory -Source $repoZebarDir -Destination $targetDir -Description 'Zebar config'
+}
+
+function Install-WallpaperWatcherStartup {
+    Write-Host "`n==> Setting up Wallpaper Theme Watcher startup shortcut" -ForegroundColor Cyan
+    $watcherScript = Join-Path $ScriptsRoot "helpers\watch-wallpaper-theme.ps1"
+    if (-not (Test-Path $watcherScript)) {
+        return
+    }
+
+    $startupDir = [Environment]::GetFolderPath('Startup')
+    if ($startupDir -and (Test-Path $startupDir)) {
+        $shortcutPath = Join-Path $startupDir 'WallpaperThemeWatcher.lnk'
+        $pwshExe = $null
+        if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+            $pwshExe = (Get-Command pwsh).Source
+        } elseif (Get-Command powershell -ErrorAction SilentlyContinue) {
+            $pwshExe = (Get-Command powershell).Source
+        }
+
+        if ($pwshExe) {
+            try {
+                $wsh = New-Object -ComObject WScript.Shell
+                $shortcut = $wsh.CreateShortcut($shortcutPath)
+                $shortcut.TargetPath = $pwshExe
+                $shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -NoProfile -File `"$watcherScript`""
+                $shortcut.Description = 'Dynamic Wallpaper Theme Watcher for GlazeWM and Zebar'
+                $shortcut.Save()
+                [System.Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut) | Out-Null
+                [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
+                Write-Host "Wallpaper Watcher startup shortcut enabled: $shortcutPath" -ForegroundColor Green
+            } catch {
+                Write-Host "Failed to create Wallpaper Watcher startup shortcut: $_" -ForegroundColor Yellow
+            }
+        }
+    }
+}
+
+Sync-WallpaperTheme
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
 Install-WezTermConfig
 Install-GlazeWMConfig
+Install-ZebarConfig
 Install-Btop4winTheme
+Install-WallpaperWatcherStartup
