@@ -439,7 +439,10 @@
           "style": "diamond",
           "foreground": "#000000",
           "background": "#0B59E7",
-          "template": "  {{ .Context }} "
+          "template": "  {{ if .Containers }}{{ (index .Containers 0).Names }}{{ else }}{{ .Context }}{{ end }} ",
+          "options": {
+            "display_mode": "environment"
+          }
         },
         {
           "type": "firebase",
