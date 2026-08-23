@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
     Real-time wallpaper theme synchronizer for GlazeWM & Zebar.
-    Monitors Windows TranscodedWallpaper and Wallpaper Engine config.json for changes.
+    Pure event-driven kernel watcher with zero CPU/disk polling overhead.
 #>
 
 $ErrorActionPreference = 'SilentlyContinue'
@@ -56,42 +56,8 @@ foreach ($weDir in $weDirs) {
 
 Write-Host "Dynamic wallpaper theme watcher is active." -ForegroundColor Green
 
-# Polling timestamp guard
-$lastWinTime = (Get-Item (Join-Path $themesDir "TranscodedWallpaper") -ErrorAction SilentlyContinue)?.LastWriteTime
-$lastWeTime = $null
-foreach ($weDir in $weDirs) {
-    $weFile = Join-Path $weDir "config.json"
-    if (Test-Path $weFile) {
-        $lastWeTime = (Get-Item $weFile).LastWriteTime
-        break
-    }
-}
-
 while ($true) {
-    Start-Sleep -Milliseconds 400
-
-    # Backup file polling
-    $winFile = Join-Path $themesDir "TranscodedWallpaper"
-    if (Test-Path $winFile) {
-        $curWinTime = (Get-Item $winFile).LastWriteTime
-        if ($lastWinTime -and ($curWinTime -gt $lastWinTime)) {
-            $global:pendingSync = $true
-            $global:lastEventTime = [DateTime]::UtcNow
-        }
-        $lastWinTime = $curWinTime
-    }
-
-    foreach ($weDir in $weDirs) {
-        $weFile = Join-Path $weDir "config.json"
-        if (Test-Path $weFile) {
-            $curWeTime = (Get-Item $weFile).LastWriteTime
-            if ($lastWeTime -and ($curWeTime -gt $lastWeTime)) {
-                $global:pendingSync = $true
-                $global:lastEventTime = [DateTime]::UtcNow
-            }
-            $lastWeTime = $curWeTime
-        }
-    }
+    Start-Sleep -Seconds 1
 
     # Execute exactly once only after file writes have fully settled for 1.4s
     if ($global:pendingSync) {
