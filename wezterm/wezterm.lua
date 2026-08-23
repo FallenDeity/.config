@@ -67,8 +67,8 @@ config.adjust_window_size_when_changing_font_size = false
 --------------------------------------------------------------------------------
 -- 3. Performance & Rendering
 --------------------------------------------------------------------------------
-config.front_end = 'WebGpu'
-config.webgpu_power_preference = 'HighPerformance'
+config.front_end = 'OpenGL'
+config.prefer_egl = true
 config.max_fps = 120
 config.animation_fps = 1 -- Saves GPU/CPU power when idle
 config.scrollback_lines = 10000
