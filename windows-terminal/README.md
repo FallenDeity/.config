@@ -6,14 +6,13 @@ Windows Terminal is configured with Catppuccin Mocha, acrylic transparency, and 
 
 ## Panes & Splits
 
-| Keybinding                                                                              | Action                       | Description                                 |
-| :-------------------------------------------------------------------------------------- | :--------------------------- | :------------------------------------------ |
-| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>                                        | **Duplicate Pane Auto**      | Splits active pane in automatic orientation |
-| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>+</kbd>                                        | **Split Horizontally**       | Splits pane side-by-side                    |
-| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>-</kbd>                                        | **Split Vertically**         | Splits pane top-to-bottom                   |
-| <kbd>Alt</kbd> + <kbd>←</kbd>/<kbd>↓</kbd>/<kbd>↑</kbd>/<kbd>→</kbd>                    | **Move Focus between Panes** | Shifts cursor focus to adjacent pane        |
-| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd>/<kbd>↓</kbd>/<kbd>↑</kbd>/<kbd>→</kbd> | **Resize Pane**              | Adjusts pane size in direction              |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>W</kbd>                                       | **Close Pane / Tab**         | Closes active pane or tab                   |
+| Keybinding                                                                             | Action                                      | Description                                 |
+| :------------------------------------------------------------------------------------- | :------------------------------------------ | :------------------------------------------ |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>\</kbd>                                      | **Split Horizontally** (Side-by-side)       | Splits pane vertically side-by-side         |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>-</kbd>                                      | **Split Vertically** (Top-to-bottom)        | Splits pane horizontally top-to-bottom      |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd>/<kbd>↓</kbd>/<kbd>↑</kbd>/<kbd>→</kbd>| **Move Focus between Panes**                | Shifts cursor focus to adjacent pane        |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Z</kbd>                                        | **Toggle Pane Zoom**                        | Maximizes / restores active pane            |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>                                      | **Close Pane**                              | Closes active pane                          |
 
 ---
 

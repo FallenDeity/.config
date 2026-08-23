@@ -19,9 +19,9 @@ WezTerm is a GPU-accelerated terminal emulator configured with Catppuccin Mocha,
 | :------------------------------------------------------------------------- | :------------------------------------------ |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>\</kbd> *(or <kbd>\|</kbd>)*     | **Split Horizontally** (Side-by-side)       |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>-</kbd> *(or <kbd>_</kbd>)*      | **Split Vertically** (Top-to-bottom)        |
-| <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>↓</kbd> / <kbd>↑</kbd> / <kbd>→</kbd> | **Navigate between Panes**                  |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Z</kbd>                            | **Toggle Pane Zoom** (Maximize active pane) |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>W</kbd>                          | **Close Current Pane**                      |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>↓</kbd> / <kbd>↑</kbd> / <kbd>→</kbd> | **Navigate between Panes**                  |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Z</kbd>                                                | **Toggle Pane Zoom** (Maximize active pane) |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>                                              | **Close Current Pane**                      |
 
 ---
 

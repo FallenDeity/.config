@@ -148,11 +148,12 @@ config.keys = {
   { key = '_', mods = 'CTRL|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
 
   -- Pane Navigation & Management
-  { key = 'w', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
-  { key = 'LeftArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Left' },
-  { key = 'RightArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Right' },
-  { key = 'UpArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Up' },
-  { key = 'DownArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Down' },
+  { key = 'x', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
+  { key = 'X', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
+  { key = 'LeftArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Left' },
+  { key = 'RightArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Right' },
+  { key = 'UpArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Up' },
+  { key = 'DownArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Down' },
   { key = 'z', mods = 'CTRL|ALT', action = act.TogglePaneZoomState },
 
   -- Tabs

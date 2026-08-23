@@ -15,7 +15,7 @@ GlazeWM is a tiling window manager for Windows inspired by i3 and bspwm.
 | <kbd>Alt</kbd> + <kbd>M</kbd>                        | **Toggle Minimized**  | Minimizes the active window                                     |
 | <kbd>Alt</kbd> + <kbd>T</kbd>                        | **Set Tiling**        | Re-integrates floating window back into tiling layout           |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd> | **Toggle Floating**   | Detaches window into centered floating mode                     |
-| <kbd>Alt</kbd> + <kbd>C</kbd>                        | **Cycle Focus**       | Cycles focus between tiling, floating, and fullscreen           |
+| <kbd>Alt</kbd> + <kbd>`</kbd>                        | **Cycle Focus**       | Cycles focus between tiling, floating, and fullscreen           |
 | <kbd>Alt</kbd> + <kbd>V</kbd>                        | **Toggle Direction**  | Toggles horizontal / vertical split orientation for new windows |
 
 ---
