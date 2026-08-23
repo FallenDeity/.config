@@ -55,6 +55,10 @@
         "action": "togglePaneZoom"
       },
       "keys": "ctrl+alt+z"
+    },
+    {
+      "command": "unbound",
+      "keys": "ctrl+shift+w"
     }
   ],
   "copyFormatting": "none",
