@@ -39,7 +39,7 @@ window_effects:
   focused_window:
     border:
       enabled: true
-      color: '#4bfbe0' # Catppuccin Sapphire (High-contrast focused border)
+      color: '#62abf8' # Catppuccin Sapphire (High-contrast focused border)
     hide_title_bar:
       enabled: false
     corner_style:
@@ -112,6 +112,9 @@ window_rules:
         window_class: { not_regex: 'PPTFrameClass' }
       - window_process: { equals: 'Steam' }
         window_title: { regex: 'Friends List|Special Offers|Steam Guard' }
+
+      # Citrix Workspace / Remote Desktop Viewer
+      - window_process: { regex: '(?i)wfica32|cdviewer|selfservice|receiver|wfcrun32' }
 
   # Dialogs / Settings / Alerts set to float (across all apps)
   - commands: ['set-floating --centered']
