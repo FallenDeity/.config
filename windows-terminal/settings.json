@@ -3,6 +3,18 @@
   "$schema": "https://aka.ms/terminal-profiles-schema",
   "actions": [
     {
+      "command": "closePane",
+      "keys": "ctrl+shift+q"
+    },
+    {
+      "command": "closePane",
+      "keys": "ctrl+shift+w"
+    },
+    {
+      "command": "closeTab",
+      "keys": "ctrl+shift+w"
+    },
+    {
       "command": {
         "action": "splitPane",
         "split": "vertical"
@@ -45,39 +57,25 @@
       "keys": "ctrl+shift+down"
     },
     {
-      "command": {
-        "action": "closePane"
-      },
-      "keys": "ctrl+shift+x"
-    },
-    {
-      "command": {
-        "action": "togglePaneZoom"
-      },
+      "command": "togglePaneZoom",
       "keys": "ctrl+alt+z"
     },
     {
-      "command": "unbound",
-      "keys": "ctrl+shift+w"
+      "command": "copy",
+      "keys": "ctrl+c"
+    },
+    {
+      "command": "paste",
+      "keys": "ctrl+v"
+    },
+    {
+      "command": "find",
+      "keys": "ctrl+shift+f"
     }
   ],
   "copyFormatting": "none",
   "copyOnSelect": false,
   "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-  "keybindings": [
-    {
-      "id": "Terminal.CopyToClipboard",
-      "keys": "ctrl+c"
-    },
-    {
-      "id": "Terminal.FindText",
-      "keys": "ctrl+shift+f"
-    },
-    {
-      "id": "Terminal.PasteFromClipboard",
-      "keys": "ctrl+v"
-    }
-  ],
   "newTabMenu": [
     {
       "type": "remainingProfiles"

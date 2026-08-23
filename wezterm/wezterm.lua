@@ -51,9 +51,9 @@ config.launch_menu = {
 -- 2. Window Styling (Windows 11 Rounded Corners + Clean Borderless)
 --------------------------------------------------------------------------------
 config.window_decorations = 'RESIZE'
-config.win32_system_backdrop = 'Disable'
+config.win32_system_backdrop = 'Acrylic'
 config.enable_tab_bar = false
-config.window_background_opacity = 0.92
+config.window_background_opacity = 0.75
 config.window_padding = {
   left = 8,
   right = 8,
@@ -148,8 +148,8 @@ config.keys = {
   { key = '_', mods = 'CTRL|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
 
   -- Pane Navigation & Management
-  { key = 'x', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
-  { key = 'X', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
+  { key = 'q', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
+  { key = 'Q', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
   { key = 'LeftArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Left' },
   { key = 'RightArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Right' },
   { key = 'UpArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Up' },

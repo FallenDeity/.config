@@ -42,11 +42,13 @@ $PSReadLineParams = @{
 
 Set-PSReadLineOption @PSReadLineParams
 
-# ============ PSReadLine Key Bindings ============
-# Tab completion
-Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
-# Ctrl+R for history
-Set-PSReadLineKeyHandler -Key Ctrl+r -ScriptBlock { Invoke-FzfReverseHistory }
+# ============ PSReadLine & PsFzf Key Bindings ============
+if (Get-Command Set-PsFzfOption -ErrorAction SilentlyContinue) {
+    Set-PsFzfOption -PSReadlineChordReverseHistory 'Ctrl+r' -PSReadlineChordSetLocation 'Ctrl+t' -TabExpansion
+} else {
+    Set-PSReadLineKeyHandler -Key Ctrl+r -Function ReverseSearchHistory
+    Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+}
 # Arrow keys for history prefix search
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward

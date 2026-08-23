@@ -12,7 +12,7 @@ Windows Terminal is configured with Catppuccin Mocha, acrylic transparency, and 
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>-</kbd>                                      | **Split Vertically** (Top-to-bottom)        | Splits pane horizontally top-to-bottom      |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd>/<kbd>↓</kbd>/<kbd>↑</kbd>/<kbd>→</kbd>| **Move Focus between Panes**                | Shifts cursor focus to adjacent pane        |
 | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Z</kbd>                                        | **Toggle Pane Zoom**                        | Maximizes / restores active pane            |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>                                      | **Close Pane**                              | Closes active pane                          |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Q</kbd>                                      | **Close Pane**                              | Closes active pane                          |
 
 ---
 
