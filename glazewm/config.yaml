@@ -88,6 +88,10 @@ window_rules:
       - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
         window_class: { regex: 'Chrome_WidgetWin_1|MozillaDialogClass' }
 
+      # Universal Progress & Operation dialogs (Explorer, 7-Zip, WinRAR, Installers, Updaters, etc.)
+      - window_class: { regex: 'OperationStatusWindow|ProgressDialog|MsiDialogCloseClass' }
+      - window_title: { regex: '(?i).*?%\s*(complete|done)?|Copying|Moving|Deleting|Replacing|Extracting|Compressing|Downloading|Installing|Uninstalling|Updating' }
+
       # Windows system utilities and 3rd party tools
       - window_process: { equals: 'PowerToys' }
         window_class: { regex: 'HwndWrapper\[PowerToys\.PowerAccent.*?\]' }
@@ -109,9 +113,13 @@ window_rules:
       - window_process: { equals: 'Steam' }
         window_title: { regex: 'Friends List|Special Offers|Steam Guard' }
 
-  # Dialogs / Settings set to float
+  # Dialogs / Settings / Alerts set to float (across all apps)
   - commands: ['set-floating --centered']
     match:
+      # Universal standard Win32 dialogs (Open/Save file, properties, confirmations, alert boxes)
+      - window_class: { equals: '#32770' }
+      - window_class: { regex: 'TaskDialog|Credential Dialog Xaml Host' }
+      # Windows system apps
       - window_process: { equals: 'SystemSettings' }
       - window_process: { equals: 'ApplicationFrameHost' }
         window_title: { regex: 'Settings|Calculator' }
@@ -181,6 +189,8 @@ keybindings:
     bindings: ['alt+m']
   - commands: ['close']
     bindings: ['alt+shift+q']
+  - commands: ['shell-exec taskkill /f /fi "STATUS eq NOT RESPONDING"']
+    bindings: ['alt+ctrl+q']
 
   # GlazeWM management
   - commands: ['wm-toggle-pause']

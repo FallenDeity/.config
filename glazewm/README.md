@@ -10,6 +10,7 @@ GlazeWM is a tiling window manager for Windows inspired by i3 and bspwm.
 | :--------------------------------------------------- | :-------------------- | :-------------------------------------------------------------- |
 | <kbd>Alt</kbd> + <kbd>Enter</kbd>                    | **Launch Terminal**   | Opens WezTerm (`wezterm-gui`)                                   |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Q</kbd>     | **Close Window**      | Closes the currently focused window                             |
+| <kbd>Alt</kbd> + <kbd>Ctrl</kbd> + <kbd>Q</kbd>      | **Force Kill Window** | Instantly terminates hung / Not Responding processes            |
 | <kbd>Alt</kbd> + <kbd>F</kbd>                        | **Toggle Fullscreen** | Expands window across the active monitor                        |
 | <kbd>Alt</kbd> + <kbd>M</kbd>                        | **Toggle Minimized**  | Minimizes the active window                                     |
 | <kbd>Alt</kbd> + <kbd>T</kbd>                        | **Set Tiling**        | Re-integrates floating window back into tiling layout           |
@@ -63,3 +64,25 @@ GlazeWM is a tiling window manager for Windows inspired by i3 and bspwm.
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>W</kbd> | **Redraw Windows** (Re-tiles all managed windows)           |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> | **Toggle Pause** (Temporarily suspends all WM keybindings)  |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd> | **Exit GlazeWM**                                            |
+
+---
+
+## Instant Startup (Task Scheduler Setup)
+
+Windows Startup folder apps run with delayed priority during user login. To start GlazeWM immediately at logon without the Windows startup queue delay:
+
+```powershell
+# 1. Register Task Scheduler trigger for instant launch at logon
+$glazeExe = (Get-Command glazewm -ErrorAction SilentlyContinue)?.Source
+if (-not $glazeExe) { $glazeExe = "$HOME\scoop\apps\glazewm\current\glazewm.exe" }
+
+$action = New-ScheduledTaskAction -Execute $glazeExe
+$trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit 0
+
+Register-ScheduledTask -TaskName "GlazeWM-Instant" -Action $action -Trigger $trigger -Settings $settings -Force
+
+# 2. Remove standard startup shortcut to prevent double-launching
+Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\GlazeWM.lnk" -ErrorAction SilentlyContinue
+```
+
