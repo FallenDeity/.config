@@ -14,7 +14,7 @@ GlazeWM is a tiling window manager for Windows inspired by i3 and bspwm.
 | <kbd>Alt</kbd> + <kbd>M</kbd>                        | **Toggle Minimized**  | Minimizes the active window                                     |
 | <kbd>Alt</kbd> + <kbd>T</kbd>                        | **Set Tiling**        | Re-integrates floating window back into tiling layout           |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd> | **Toggle Floating**   | Detaches window into centered floating mode                     |
-| <kbd>Alt</kbd> + <kbd>Space</kbd>                    | **Cycle Focus**       | Cycles focus between tiling, floating, and fullscreen           |
+| <kbd>Alt</kbd> + <kbd>C</kbd>                        | **Cycle Focus**       | Cycles focus between tiling, floating, and fullscreen           |
 | <kbd>Alt</kbd> + <kbd>V</kbd>                        | **Toggle Direction**  | Toggles horizontal / vertical split orientation for new windows |
 
 ---
@@ -37,9 +37,9 @@ GlazeWM is a tiling window manager for Windows inspired by i3 and bspwm.
 | <kbd>Alt</kbd> + <kbd>I</kbd> / <kbd>O</kbd> | Decrease / Increase window height by 2% |
 
 ### Interactive Resize Mode
-1. Press <kbd>Alt</kbd> + <kbd>R</kbd> to enter **Resize Mode**.
+1. Press <kbd>Alt</kbd> + <kbd>E</kbd> to enter **Resize Mode**.
 2. Use <kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd> or **Arrow Keys** to adjust dimensions.
-3. Press <kbd>Esc</kbd>, <kbd>Enter</kbd>, or <kbd>Alt</kbd> + <kbd>R</kbd> to exit.
+3. Press <kbd>Esc</kbd>, <kbd>Enter</kbd>, or <kbd>Alt</kbd> + <kbd>E</kbd> to exit.
 
 ---
 

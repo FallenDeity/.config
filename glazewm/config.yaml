@@ -170,7 +170,7 @@ keybindings:
   - commands: ['toggle-tiling-direction']
     bindings: ['alt+v']
   - commands: ['wm-cycle-focus']
-    bindings: ['alt+space']
+    bindings: ['alt+c']
   - commands: ['toggle-floating --centered']
     bindings: ['alt+shift+space']
   - commands: ['toggle-tiling']
