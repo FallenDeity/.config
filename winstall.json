@@ -65,6 +65,10 @@
           "Version": "146.1.88.136"
         },
         {
+          "PackageIdentifier": "Zen-Team.Zen-Browser",
+          "Version": "1.21.15b"
+        },
+        {
           "PackageIdentifier": "Google.Chrome",
           "Version": "146.0.7680.165"
         },
