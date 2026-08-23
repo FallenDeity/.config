@@ -139,7 +139,7 @@ def extract_palette(image_path: str, reroll: bool = False) -> Dict[str, Any]:
         clusters = extract_image_clusters_magick(image_path)
 
         candidate_colors: List[str] = [primary_raw]
-        for hex_val in clusters:
+        for hex_val in clusters[:6]:
             if hex_val not in candidate_colors:
                 candidate_colors.append(hex_val)
 
@@ -234,35 +234,45 @@ def generate_theme_files(palette: Dict[str, Any]) -> None:
 
 
 def sync_glazewm_border(primary_hex: str) -> None:
-    live_yaml = os.path.expandvars(r"%USERPROFILE%\.glzr\glazewm\config.yaml")
-    if not os.path.exists(live_yaml):
-        return
-    with open(live_yaml, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+    targets = [
+        os.path.expandvars(r"%USERPROFILE%\.glzr\glazewm\config.yaml"),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "glazewm", "config.yaml")),
+    ]
+    for live_yaml in targets:
+        if not os.path.exists(live_yaml):
+            continue
+        with open(live_yaml, "r", encoding="utf-8") as f:
+            lines = f.readlines()
 
-    new_lines: list[str] = []
-    in_focused_window = False
-    in_border = False
+        new_lines: list[str] = []
+        in_focused_window = False
+        in_border = False
 
-    for line in lines:
-        if "focused_window:" in line:
-            in_focused_window = True
-        elif in_focused_window and "other_windows:" in line:
-            in_focused_window = False
-            in_border = False
-
-        if in_focused_window:
-            if "border:" in line:
-                in_border = True
-            elif in_border and "color:" in line:
-                line = re.sub(r"color:\s*['\"].*?['\"]", f"color: '{primary_hex}'", line)
+        for line in lines:
+            if "focused_window:" in line:
+                in_focused_window = True
+            elif in_focused_window and "other_windows:" in line:
+                in_focused_window = False
                 in_border = False
+
+            if in_focused_window:
+                if "border:" in line:
+                    in_border = True
+                elif in_border and "color:" in line:
+                    line = re.sub(r"color:\s*['\"].*?['\"]", f"color: '{primary_hex}'", line)
+                    in_border = False
 
             new_lines.append(line)
 
-    new_content = "".join(new_lines)
-    with open(live_yaml, "w", encoding="utf-8") as f:
-        f.write(new_content)
+        new_content = "".join(new_lines)
+        with open(live_yaml, "w", encoding="utf-8") as f:
+            f.write(new_content)
+
+    # Hot-reload GlazeWM so new border takes effect immediately
+    try:
+        subprocess.run(["glazewm", "command", "wm-reload-config"], capture_output=True, check=False)
+    except Exception:
+        pass
 
 
 def main() -> None:

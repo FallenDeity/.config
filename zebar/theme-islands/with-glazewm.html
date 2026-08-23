@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Zebar Islands Theme</title>
-    <link rel="stylesheet" type="text/css" href="./colors.css" id="theme-colors" />
     <link rel="stylesheet" type="text/css" href="./styles.css" id="main-theme-styles" />
+    <link rel="stylesheet" type="text/css" href="./colors.css" id="theme-colors" />
     <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
   </head>
   <body>
@@ -46,25 +46,38 @@
         const [gpu, setGpu] = useState({ usage: 0, temp: 0 });
         const [variantIdx, setVariantIdx] = useState(0);
 
-        async function rerollTheme() {
-          try {
-            let pal = null;
+        useEffect(() => {
+          async function initPalette() {
             try {
               const res = await fetch('./palette.json?t=' + Date.now());
-              if (res.ok) pal = await res.json();
-            } catch (fetchErr) {}
+              if (res.ok) {
+                const pal = await res.json();
+                if (pal?.current) {
+                  document.documentElement.style.setProperty('--theme-accent-primary', pal.current.primary);
+                  document.documentElement.style.setProperty('--theme-accent-secondary', pal.current.secondary);
+                }
+              }
+            } catch (e) {}
+          }
+          initPalette();
+        }, []);
 
-            if (pal?.variants?.length) {
-              const nextIdx = (variantIdx + 1) % pal.variants.length;
-              setVariantIdx(nextIdx);
-              const [p, s] = pal.variants[nextIdx];
-              document.documentElement.style.setProperty('--theme-accent-primary', p);
-              document.documentElement.style.setProperty('--theme-accent-secondary', s);
-            }
+        async function rerollTheme() {
+          try {
+            try {
+              await zebar.shellExec('python', 'C:\\Users\\triya\\.glzr\\scripts\\sync-wallpaper-theme.py --reroll');
+            } catch (cmdErr) {}
 
             try {
-              await zebar.shellExec('python', '%USERPROFILE%\\.glzr\\scripts\\sync-wallpaper-theme.py --reroll');
-            } catch (cmdErr) {}
+              const res = await fetch('./palette.json?t=' + Date.now());
+              if (res.ok) {
+                const pal = await res.json();
+                if (pal?.current) {
+                  document.documentElement.style.setProperty('--theme-accent-primary', pal.current.primary);
+                  document.documentElement.style.setProperty('--theme-accent-secondary', pal.current.secondary);
+                }
+              }
+            } catch (fetchErr) {}
 
             const colorLink = document.getElementById('theme-colors');
             if (colorLink) {
@@ -98,7 +111,11 @@
 
         useEffect(() => {
           let active = true;
+          let isFetching = false;
+
           async function fetchGpu() {
+            if (!active || isFetching || document.hidden) return;
+            isFetching = true;
             try {
               const res = await zebar.shellExec('nvidia-smi', '--query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits');
               if (res?.stdout && active) {
@@ -110,13 +127,27 @@
                   });
                 }
               }
-            } catch (e) {}
+            } catch (e) {
+            } finally {
+              isFetching = false;
+            }
           }
+
           fetchGpu();
-          const timer = setInterval(fetchGpu, 2000);
-          return () => {
+          const timer = setInterval(fetchGpu, 4000);
+
+          const cleanup = () => {
             active = false;
             clearInterval(timer);
+          };
+
+          window.addEventListener('beforeunload', cleanup, { once: true });
+          window.addEventListener('pagehide', cleanup, { once: true });
+
+          return () => {
+            cleanup();
+            window.removeEventListener('beforeunload', cleanup);
+            window.removeEventListener('pagehide', cleanup);
           };
         }, []);
 

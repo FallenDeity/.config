@@ -1,16 +1,5 @@
 @import 'https://www.nerdfonts.com/assets/css/webfont.css';
 
-:root {
-  /* Default semantic fallbacks */
-  --theme-accent-primary: #74c7ec;
-  --theme-accent-secondary: #fab387;
-  --theme-bg-island: rgba(30, 30, 46, 0.85);
-  --theme-bg-notch: #1e1e2e;
-  --theme-surface: rgba(49, 50, 68, 0.85);
-  --theme-text: #cdd6f4;
-  --theme-text-muted: rgba(205, 214, 244, 0.65);
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -37,13 +26,13 @@ body {
 /* Floating Islands (Tone 1 - Primary Accent Theme) */
 .island {
   background: var(--theme-bg-island);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
   padding: 3px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: none;
   height: 34px;
 }
 

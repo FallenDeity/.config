@@ -195,7 +195,6 @@ function Install-GlzrScripts {
 }
 
 Install-GlzrScripts
-Sync-WallpaperTheme
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
 Install-WezTermConfig
@@ -203,3 +202,4 @@ Install-GlazeWMConfig
 Install-ZebarConfig
 Install-Btop4winTheme
 Install-WallpaperWatcherStartup
+Sync-WallpaperTheme

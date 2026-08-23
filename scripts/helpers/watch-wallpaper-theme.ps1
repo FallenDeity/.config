@@ -67,7 +67,6 @@ while ($true) {
             Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Wallpaper change settled. Syncing theme once..." -ForegroundColor Cyan
             
             if (Test-Path $sPy) { python $sPy }
-            if (Test-Path $sAssets) { & $sAssets -ScriptsRoot $sRoot }
             
             if (Get-Command glazewm -ErrorAction SilentlyContinue) {
                 glazewm command wm-reload-config
