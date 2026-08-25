@@ -187,6 +187,19 @@ function Install-WallpaperWatcherStartup {
     }
 }
 
+function Install-FilesAppConfig {
+    Write-Host "`n==> Setting up Files App config" -ForegroundColor Cyan
+    $pkg = (Get-AppxPackage -Name '*Files*' -ErrorAction SilentlyContinue | Select-Object -First 1)?.PackageFamilyName
+    if (-not $pkg) {
+        Write-Host 'Files App package not found; skipping settings sync.' -ForegroundColor DarkGreen
+        return
+    }
+
+    $repoFilesDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'files'
+    $targetDir = Join-Path $env:LOCALAPPDATA "Packages\$pkg\LocalState\settings"
+    Sync-ConfigDirectory -Source $repoFilesDir -Destination $targetDir -Description 'Files App config'
+}
+
 function Install-GlzrScripts {
     Write-Host "`n==> Setting up Glzr helper scripts" -ForegroundColor Cyan
     $helpersSource = Join-Path $ScriptsRoot "helpers"
@@ -197,6 +210,7 @@ function Install-GlzrScripts {
 Install-GlzrScripts
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
+Install-FilesAppConfig
 Install-WezTermConfig
 Install-GlazeWMConfig
 Install-ZebarConfig

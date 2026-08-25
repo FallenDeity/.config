@@ -1,0 +1,23 @@
+/* userChrome.css - Direct Zen Browser Overrides */
+
+/* Remove ghost separator between Duplicate Tab and Bookmark Tab */
+#context_aiSeparator,
+#context-ai-separator,
+#context_askChat ~ #context_aiSeparator {
+    display: none !important;
+}
+
+/* Ensure clean single 1px hairline on all context menu separators */
+menupopup menuseparator,
+#tabContextMenu menuseparator,
+#contentAreaContextMenu menuseparator {
+    appearance: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background: none !important;
+    margin: 4px 6px !important;
+    padding: 0 !important;
+    height: 1px !important;
+}

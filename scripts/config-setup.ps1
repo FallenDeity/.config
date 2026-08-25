@@ -502,6 +502,15 @@ else {
     Write-Host "Config assets installer script not found: $configAssetsScript" -ForegroundColor Yellow
 }
 
+# Zen Browser configuration setup
+$zenConfigScript = Join-Path $ScriptsRoot 'helpers\install-zen-config.ps1'
+if (Test-Path $zenConfigScript) {
+    & $zenConfigScript -ScriptsRoot $ScriptsRoot
+}
+else {
+    Write-Host "Zen config installer script not found: $zenConfigScript" -ForegroundColor Yellow
+}
+
 Write-Step 'Setting up git config'
 
 if (Get-Command git -ErrorAction SilentlyContinue) {

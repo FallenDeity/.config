@@ -247,6 +247,10 @@
         {
           "PackageIdentifier": "OBSProject.OBSStudio",
           "Version": "32.2.1"
+        },
+        {
+          "PackageIdentifier": "FilesCommunity.Files",
+          "Version": "4.2.0.0"
         }
       ],
       "SourceDetails": {

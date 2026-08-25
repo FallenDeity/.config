@@ -117,7 +117,10 @@
             if (!active || isFetching || document.hidden) return;
             isFetching = true;
             try {
-              const res = await zebar.shellExec('nvidia-smi', '--query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits');
+              const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1200));
+              const fetchPromise = zebar.shellExec('nvidia-smi', '--query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits');
+
+              const res = await Promise.race([fetchPromise, timeoutPromise]);
               if (res?.stdout && active) {
                 const parts = res.stdout.trim().split(',');
                 if (parts.length >= 2) {
@@ -143,11 +146,16 @@
 
           window.addEventListener('beforeunload', cleanup, { once: true });
           window.addEventListener('pagehide', cleanup, { once: true });
+          window.addEventListener('unload', cleanup, { once: true });
+          document.addEventListener('visibilitychange', () => {
+            if (document.hidden) cleanup();
+          });
 
           return () => {
             cleanup();
             window.removeEventListener('beforeunload', cleanup);
             window.removeEventListener('pagehide', cleanup);
+            window.removeEventListener('unload', cleanup);
           };
         }, []);
 

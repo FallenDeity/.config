@@ -11,10 +11,18 @@ param(
         'https://github.com/bostrot/PowerToysRunPluginWinget',
         'https://github.com/Advaith3600/PowerToys-Run-Currency-Converter',
         'https://github.com/lin-ycv/EverythingPowerToys'
-    )
+    ),
+    [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Temporarily disabled in favor of Command Palette over PowerToys Run
+if (-not $Force) {
+    Write-Host "`n==> PowerToys Run plugin installation is temporarily disabled (using Command Palette)." -ForegroundColor Yellow
+    Write-Host "    Pass -Force to run installation if needed.`n" -ForegroundColor DarkGray
+    return
+}
 
 $PluginArchitecture = if ($env:PROCESSOR_ARCHITECTURE -match 'ARM64') { 'arm64' } else { 'x64' }
 $PluginsRoot = Join-Path $HOME 'AppData\Local\Microsoft\PowerToys\PowerToys Run\Plugins'

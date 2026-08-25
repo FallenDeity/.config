@@ -1,0 +1,305 @@
+@-moz-document url-prefix("chrome:") {
+
+  /* =========================================================================
+     PowerToys Run / Windows 11 Acrylic Glassmorphism (Compact Polish)
+     ========================================================================= */
+
+  /* Stacking context & backing surface setup so backdrop-filter works on Zen 1.19.9b+ */
+  #browser {
+    backdrop-filter: blur(0) !important;
+  }
+
+  #zen-browser-background {
+    contain: none !important;
+  }
+
+  .browserStack browser {
+    transform: translateZ(0) !important;
+  }
+
+  .browserStack,
+  #tabbrowser-tabpanels,
+  .browserStack > browser {
+    background-color: rgba(18, 20, 29, 0.10) !important;
+  }
+
+  /* 1. Floating Acrylic Glass Container (Borderless & Deep Frosted Blur) */
+  #urlbar:is([breakout-extend], [breakout-extend="true"], [open]) .urlbar-background {
+    border-radius: 12px !important;
+    border: none !important;
+    outline: none !important;
+    background: color-mix(in srgb,
+        var(--mod-cleanedurlbar-customdarkcolor, #1a1a1e) var(--mod-cleanedurlbar-glassopacity, 100%),
+        transparent) !important;
+    background-color: color-mix(in srgb,
+        var(--mod-cleanedurlbar-customdarkcolor, #1a1a1e) var(--mod-cleanedurlbar-glassopacity, 100%),
+        transparent) !important;
+    backdrop-filter: blur(var(--mod-cleanedurlbar-glassblur, 25px)) saturate(1.8) contrast(1.05) !important;
+    -webkit-backdrop-filter: blur(var(--mod-cleanedurlbar-glassblur, 25px)) saturate(1.8) contrast(1.05) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  /* Accent color mode support - Neutral Grayish with Subtle Accent Touch */
+  @media (-moz-bool-pref: "mod.cleanedurlbar.baraccent") {
+    #urlbar:is([breakout-extend], [breakout-extend="true"], [open]) .urlbar-background {
+      background: color-mix(in srgb,
+          color-mix(in srgb, var(--zen-primary-color, #705df2) 18%, #18191e) var(--mod-cleanedurlbar-glassopacity, 100%),
+          transparent) !important;
+      background-color: color-mix(in srgb,
+          color-mix(in srgb, var(--zen-primary-color, #705df2) 18%, #18191e) var(--mod-cleanedurlbar-glassopacity, 100%),
+          transparent) !important;
+    }
+  }
+
+  /* 3. Force all internal containers transparent with zero extra padding */
+  .urlbarView,
+  .urlbarView-body-outer,
+  .urlbarView-body-inner,
+  .urlbarView-results,
+  .urlbar-input-container,
+  #urlbar-input,
+  .urlbarView-row:not([selected]) {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+  }
+
+  /* 4. Top Search Input Bar (Matches Image 2) */
+  #urlbar-input-container {
+    padding-block: 4px !important;
+    padding-inline: 10px !important;
+    min-height: 38px !important;
+    height: auto !important;
+  }
+
+  #urlbar-input {
+    font-size: 14px !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+  }
+
+  #urlbar-input::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  .urlbar-icon {
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+
+  /* 5. Results List with Subtle Top Divider */
+  .urlbarView {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-top: 0px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+  }
+
+  .urlbarView-results {
+    padding-block: 0px !important;
+  }
+
+  /* 6. Result Rows (Comfortable Inner Padding & Reduced Outer Margin) */
+  .urlbarView-row {
+    border-radius: 7px !important;
+    margin-inline: 4px !important;
+    margin-block: 1px !important;
+    padding-block: 0px !important;
+    padding-inline: 0px !important;
+    min-height: 0px !important;
+    transition: background-color 0.12s ease !important;
+  }
+
+  .urlbarView-row-inner {
+    display: flex !important;
+    align-items: center !important;
+    padding-block: 7px !important;
+    padding-inline: 12px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+  }
+
+  .urlbarView-no-wrap {
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .urlbarView-favicon {
+    margin-block: 0 !important;
+    margin-inline-end: 8px !important;
+    align-self: center !important;
+  }
+
+  .urlbarView-row:hover:not([selected]) {
+    background: rgba(255, 255, 255, 0.06) !important;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  /* 7. Typography & Icons */
+  .urlbarView-row .urlbarView-title {
+    color: #f8fafc !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    margin-block: 0 !important;
+    align-self: center !important;
+    line-height: normal !important;
+  }
+
+  .urlbarView-row .urlbarView-url {
+    color: rgba(203, 213, 225, 0.5) !important;
+    font-size: 12px !important;
+    margin-block: 0 !important;
+    align-self: center !important;
+    line-height: normal !important;
+  }
+
+  .urlbarView-row .urlbarView-action {
+    color: rgba(203, 213, 225, 0.6) !important;
+    font-size: 12px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    margin-block: 0 !important;
+    align-self: center !important;
+    line-height: normal !important;
+  }
+
+  /* Favicons - clean and floating with no square background box */
+  .urlbarView-favicon,
+  .urlbarView-favicon-container {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Invert dark/black monochrome favicons (like GitHub) to crisp bright white */
+  .urlbarView-row .urlbarView-favicon:is([src*="github"], [src*="GitHub"], [src*="github.com"]) {
+    filter: invert(1) brightness(1.3) !important;
+  }
+
+  /* 8. Selected Row Highlight */
+  .urlbarView-row[selected] {
+    background: rgba(255, 255, 255, 0.12) !important;
+    background-color: color-mix(in srgb, var(--zen-primary-color, #888888) 18%, rgba(255, 255, 255, 0.12)) !important;
+
+    & .urlbarView-title {
+      color: #ffffff !important;
+      font-weight: 600 !important;
+    }
+    & .urlbarView-url {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+    & .urlbarView-action {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+  }
+
+  /* 9. Action Badges & Buttons (Switch to Tab Only) - Override Zen's Built-in Absolute Arrow */
+  .urlbarView-row[has-action]:is([type="switchtab"], [type="remotetab"], [type="clipboard"]) .urlbarView-action:last-child,
+  .urlbarView-row:is([type="switchtab"], :has([data-l10n-id*="switch-tab"])) .urlbarView-action {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    margin-inline-start: auto !important;
+    margin-inline-end: 0 !important;
+    color: rgba(226, 232, 240, 0.75) !important;
+    font-size: 12px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    line-height: normal !important;
+    scale: 1 !important;
+    transform: none !important;
+    position: static !important;
+  }
+
+  /* Completely hide the built-in grey button element */
+  .urlbarView-row :is(.urlbarView-button, .urlbarView-action-btn, .urlbarView-button-switchtab, [class*="urlbarView-button"], [class*="action-btn"]) {
+    display: none !important;
+  }
+
+  /* Override Zen's absolute 28px ::after with an inline 13px crisp Lucide arrow */
+  .urlbarView-row[has-action]:is([type="switchtab"], [type="remotetab"], [type="clipboard"]) .urlbarView-action:last-child::after,
+  .urlbarView-row:is([type="switchtab"], :has([data-l10n-id*="switch-tab"])) .urlbarView-action::after {
+    content: "" !important;
+    position: static !important;
+    right: auto !important;
+    top: auto !important;
+    display: inline-block !important;
+    width: 13px !important;
+    height: 13px !important;
+    min-width: 13px !important;
+    min-height: 13px !important;
+    margin: 0 !important;
+    margin-inline-start: 4px !important;
+    align-self: center !important;
+    transform: translateY(0.5px) !important;
+    background-color: #cbd5e1 !important;
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="m13 5 7 7-7 7"/></svg>') !important;
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="m13 5 7 7-7 7"/></svg>') !important;
+    mask-size: contain !important;
+    -webkit-mask-size: contain !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-position: center !important;
+    -webkit-mask-position: center !important;
+    pointer-events: none !important;
+    opacity: 0.95 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .urlbarView-row[selected][has-action]:is([type="switchtab"], [type="remotetab"], [type="clipboard"]) .urlbarView-action:last-child::after,
+  .urlbarView-row[selected]:is([type="switchtab"], :has([data-l10n-id*="switch-tab"])) .urlbarView-action::after {
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+  }
+
+  /* 10. Search One-Offs ("This time, search with" Footer) */
+  .search-one-offs {
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 0 0 12px 12px !important;
+    padding: 6px 10px !important;
+    margin: 2px 0 0 0 !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    background-color: rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .searchbar-engine-one-off-item {
+    border-radius: 5px !important;
+    margin-right: 3px !important;
+  }
+
+  #urlbar-anon-search-settings {
+    margin-right: 0px !important;
+  }
+
+  /* 11. Context Menu Separator Deduplication & Clean 1px Hairline */
+  menupopup menuseparator,
+  #tabContextMenu menuseparator,
+  #contentAreaContextMenu menuseparator {
+    appearance: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background: none !important;
+    margin: 4px 6px !important;
+    padding: 0 !important;
+    height: 1px !important;
+  }
+
+  /* Remove orphaned/duplicate separators caused by hidden AI & group items */
+  #context_aiSeparator,
+  #context-ai-separator,
+  #context_tabStateSeparator ~ #context_aiSeparator,
+  menupopup menuseparator + menuseparator,
+  menupopup menuseparator:has(+ menuseparator),
+  #tabContextMenu menuseparator + menuseparator,
+  #tabContextMenu menuseparator:has(+ menuseparator),
+  menupopup menuseparator:first-child,
+  menupopup menuseparator:last-child {
+    display: none !important;
+  }
+}

@@ -1,0 +1,38 @@
+[
+    {
+        "property": "mod.cleanedurlbar.glassopacity",
+        "label": "Glass Tint Opacity (e.g. 20% for very clear, 35% for medium, 60% for dark)",
+        "type": "string",
+        "defaultValue": "25%"
+    },
+    {
+        "property": "mod.cleanedurlbar.glassblur",
+        "label": "URL Bar Frost/Blur Strength (e.g. 25px, 40px, 0px for none)",
+        "type": "string",
+        "defaultValue": "30px"
+    },
+    {
+        "property": "mod.cleanedurlbar.backdropdim",
+        "label": "Background Dimming (e.g. 85% for bright/vibrant, 60% for darker, 100% for no dim)",
+        "type": "string",
+        "defaultValue": "80%"
+    },
+    {
+        "property": "mod.cleanedurlbar.backdropblur",
+        "label": "Background Blur (e.g. 10px, 15px, 0px for none)",
+        "type": "string",
+        "defaultValue": "12px"
+    },
+    {
+        "property": "mod.cleanedurlbar.baraccent",
+        "label": "Use Zen / Wallpaper Accent Color for Glass Tint",
+        "type": "checkbox",
+        "defaultValue": true
+    },
+    {
+        "property": "mod.cleanedurlbar.customdarkcolor",
+        "label": "Custom Glass Color (when accent color is unchecked)",
+        "type": "string",
+        "defaultValue": "#1e202e"
+    }
+]

@@ -1,0 +1,120 @@
+{
+    "ad97bb70-0066-4e42-9b5f-173a5e42c6fc": {
+        "id": "ad97bb70-0066-4e42-9b5f-173a5e42c6fc",
+        "name": "SuperPins",
+        "description": "This Zen Mod enhances pinned tabs/Essentials, by making some UI/UX changes.",
+        "homepage": "https://github.com/CosmoCreeper/Zen-Themes/tree/main/SuperPins",
+        "style": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/ad97bb70-0066-4e42-9b5f-173a5e42c6fc/chrome.css",
+        "readme": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/ad97bb70-0066-4e42-9b5f-173a5e42c6fc/readme.md",
+        "image": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/ad97bb70-0066-4e42-9b5f-173a5e42c6fc/image.png",
+        "author": "CosmoCreeper",
+        "version": "1.7.0",
+        "preferences": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/ad97bb70-0066-4e42-9b5f-173a5e42c6fc/preferences.json",
+        "tags": [
+            "tabs"
+        ],
+        "createdAt": "2024-08-28",
+        "updatedAt": "2026-01-28",
+        "enabled": true
+    },
+    "642854b5-88b4-4c40-b256-e035532109df": {
+        "id": "642854b5-88b4-4c40-b256-e035532109df",
+        "name": "Transparent Zen",
+        "description": "Make the Zen Browser's tab background transparent, get smooth animations and more. Enable  features in mod settings and visit the homepage below to learn more about the features. 👇",
+        "homepage": "https://www.sameerasw.com/zen",
+        "style": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/642854b5-88b4-4c40-b256-e035532109df/chrome.css",
+        "readme": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/642854b5-88b4-4c40-b256-e035532109df/readme.md",
+        "image": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/642854b5-88b4-4c40-b256-e035532109df/image.png",
+        "author": "sameerasw",
+        "version": "1.17.16",
+        "tags": [],
+        "createdAt": "2025-02-04",
+        "updatedAt": "2026-03-11",
+        "preferences": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/642854b5-88b4-4c40-b256-e035532109df/preferences.json",
+        "enabled": true
+    },
+    "b51ff956-6aea-47ab-80c7-d6c047c0d510": {
+        "id": "b51ff956-6aea-47ab-80c7-d6c047c0d510",
+        "name": "Disable Status Bar",
+        "description": "This removes the bottom-left status bar when hovering over a URL.",
+        "homepage": "",
+        "style": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/b51ff956-6aea-47ab-80c7-d6c047c0d510/chrome.css",
+        "readme": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/b51ff956-6aea-47ab-80c7-d6c047c0d510/readme.md",
+        "image": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/b51ff956-6aea-47ab-80c7-d6c047c0d510/image.png",
+        "author": "F-U-B-AR",
+        "version": "1.0.0",
+        "tags": [],
+        "createdAt": "2024-09-03",
+        "updatedAt": "2025-01-26",
+        "enabled": true
+    },
+    "f4866f39-cfd6-4498-ab92-54213b8279dc": {
+        "id": "f4866f39-cfd6-4498-ab92-54213b8279dc",
+        "name": "Animations Plus",
+        "description": "A nice animation pack for Zen Browser",
+        "homepage": "https://github.com/Anoms12/Animations-plus",
+        "style": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/f4866f39-cfd6-4498-ab92-54213b8279dc/chrome.css",
+        "readme": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/f4866f39-cfd6-4498-ab92-54213b8279dc/readme.md",
+        "image": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/f4866f39-cfd6-4498-ab92-54213b8279dc/image.png",
+        "author": "Anoms12",
+        "version": "1.0.0",
+        "tags": [],
+        "createdAt": "2024-12-01",
+        "updatedAt": "2025-01-26",
+        "enabled": true
+    },
+    "zen-better-cleaned-url-bar": {
+        "id": "zen-better-cleaned-url-bar",
+        "name": "Acrylic Glassmorphism URL Bar",
+        "description": "PowerToys Run style acrylic glassmorphism with blurred backdrop and sleek active pill.",
+        "author": "PowerToys Style",
+        "version": "1.1.0",
+        "homepage": "https://github.com/matteo-tafuro/zen-better-cleaned-url-bar",
+        "style": "C:\\Users\\triya\\AppData\\Roaming\\zen\\Profiles\\lj79lb3q.Default (release)\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\chrome.css",
+        "readme": "C:\\Users\\triya\\AppData\\Roaming\\zen\\Profiles\\lj79lb3q.Default (release)\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\readme.md",
+        "preferences": "C:\\Users\\triya\\AppData\\Roaming\\zen\\Profiles\\lj79lb3q.Default (release)\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\preferences.json",
+        "enabled": true
+    },
+    "4ab93b88-151c-451b-a1b7-a1e0e28fa7f8": {
+        "id": "4ab93b88-151c-451b-a1b7-a1e0e28fa7f8",
+        "name": "No Sidebar Scrollbar",
+        "description": "This theme removes the Sidebar Scrollbar while retaining the scroll functionality.",
+        "homepage": "https://github.com/mally8/zen-browser-no-sidebar-scrollbar",
+        "style": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/4ab93b88-151c-451b-a1b7-a1e0e28fa7f8/chrome.css",
+        "readme": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/4ab93b88-151c-451b-a1b7-a1e0e28fa7f8/readme.md",
+        "image": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/4ab93b88-151c-451b-a1b7-a1e0e28fa7f8/image.png",
+        "preferences": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/4ab93b88-151c-451b-a1b7-a1e0e28fa7f8/preferences.json",
+        "author": "mally8",
+        "version": "1.0.8",
+        "tags": [
+            "sidebar",
+            "scrollbar"
+        ],
+        "createdAt": "2024-09-01",
+        "updatedAt": "2025-05-22",
+        "enabled": true
+    },
+    "a6335949-4465-4b71-926c-4a52d34bc9c0": {
+        "id": "a6335949-4465-4b71-926c-4a52d34bc9c0",
+        "name": "Better Find Bar",
+        "description": "Improves the find bar, making it floating with theme match and customization.",
+        "homepage": "https://github.com/RobotoSkunk/zen-better-findbar",
+        "style": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/a6335949-4465-4b71-926c-4a52d34bc9c0/chrome.css",
+        "readme": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/a6335949-4465-4b71-926c-4a52d34bc9c0/readme.md",
+        "image": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/a6335949-4465-4b71-926c-4a52d34bc9c0/image.png",
+        "author": "RobotoSkunk",
+        "preferences": "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes/a6335949-4465-4b71-926c-4a52d34bc9c0/preferences.json",
+        "version": "1.5.1",
+        "tags": [
+            "find",
+            "bar",
+            "search",
+            "searchbar",
+            "find-bar",
+            "search-bar"
+        ],
+        "createdAt": "2024-11-24",
+        "updatedAt": "2026-02-12",
+        "enabled": true
+    }
+}
