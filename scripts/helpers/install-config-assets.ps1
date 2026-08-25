@@ -219,6 +219,26 @@ function Install-GlzrScripts {
     Sync-ConfigDirectory -Source $helpersSource -Destination $targetDir -Description 'Glzr scripts'
 }
 
+function Install-RainmeterConfig {
+    Write-Host "`n==> Setting up Rainmeter config" -ForegroundColor Cyan
+    $repoRainmeterDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'rainmeter'
+    if (-not (Test-Path $repoRainmeterDir)) { return }
+
+    $appDataRainmeter = "$env:APPDATA\Rainmeter"
+    if (Test-Path "$repoRainmeterDir\Rainmeter.ini") {
+        Ensure-Directory -Path $appDataRainmeter
+        Copy-Item "$repoRainmeterDir\Rainmeter.ini" "$appDataRainmeter\Rainmeter.ini" -Force
+    }
+    if (Test-Path "$repoRainmeterDir\Layouts") {
+        Sync-ConfigDirectory -Source "$repoRainmeterDir\Layouts" -Destination "$appDataRainmeter\Layouts" -Description 'Rainmeter layouts'
+    }
+
+    $docsRainmeter = "$HOME\Documents\Rainmeter\Skins"
+    if (Test-Path "$repoRainmeterDir\Skins") {
+        Sync-ConfigDirectory -Source "$repoRainmeterDir\Skins" -Destination $docsRainmeter -Description 'Rainmeter skins'
+    }
+}
+
 Install-GlzrScripts
 Install-WindowsTerminalProfileIcons
 Install-WindowsTerminalSettings
@@ -227,5 +247,6 @@ Install-WezTermConfig
 Install-GlazeWMConfig
 Install-ZebarConfig
 Install-Btop4winTheme
+Install-RainmeterConfig
 Install-WallpaperWatcherStartup
 Sync-WallpaperTheme
