@@ -41,15 +41,19 @@ if (-not $Profiles) {
     Ensure-Directory -Path $defaultProfileDir
 
     $profilesIni = @"
+[General]
+StartWithLastProfile=1
+Version=2
+
+[InstallF0DC299D809B9700]
+Default=Profiles/default.release
+Locked=1
+
 [Profile0]
 Name=default
 IsRelative=1
 Path=Profiles/default.release
 Default=1
-
-[General]
-StartWithLastProfile=1
-Version=2
 "@
     Set-Content -Path (Join-Path $ZenBaseDir "profiles.ini") -Value $profilesIni -Encoding UTF8
     $Profiles = @(Get-Item $defaultProfileDir)
@@ -59,6 +63,17 @@ Version=2
 foreach ($Profile in $Profiles) {
     $ProfilePath = $Profile.FullName
     Write-Host "Configuring Zen profile: $($Profile.Name)" -ForegroundColor Green
+
+    # Ensure profiles.ini points Install section directly to this profile
+    $profilesIniPath = Join-Path $ZenBaseDir "profiles.ini"
+    if (Test-Path $profilesIniPath) {
+        $iniContent = Get-Content $profilesIniPath -Raw
+        if ($iniContent -match '\[Install[^\]]+\]') {
+            $relPath = "Profiles/" + $Profile.Name
+            $iniContent = [regex]::Replace($iniContent, '(\[Install[^\]]+\][\r\n]+Default=)[^\r\n]+', "`$1$relPath")
+            Set-Content -Path $profilesIniPath -Value $iniContent -Encoding UTF8
+        }
+    }
 
     # 1. Sync / Symlink chrome directory
     $SourceChrome = Join-Path $ZenConfigDir "chrome"
@@ -83,17 +98,6 @@ foreach ($Profile in $Profiles) {
     if (Test-Path $SourceUserJs) {
         Copy-Item -Path $SourceUserJs -Destination $DestUserJs -Force
         Write-Host "  [+] Synced user.js (preferences) to: $DestUserJs" -ForegroundColor DarkGreen
-    }
-
-    # 4. Sync Extensions (.xpi files)
-    $SourceExts = Join-Path $ZenConfigDir "extensions"
-    $DestExts = Join-Path $ProfilePath "extensions"
-    if (Test-Path $SourceExts) {
-        Ensure-Directory -Path $DestExts
-        Copy-Item -Path (Join-Path $SourceExts "*.xpi") -Destination $DestExts -Force
-        # Clear startup cache to force Zen to re-index and install synced .xpi extensions
-        Remove-Item -Path (Join-Path $ProfilePath "addonStartup.json.lz4") -Force -ErrorAction SilentlyContinue
-        Write-Host "  [+] Synced browser extensions & invalidated addon cache: $DestExts" -ForegroundColor DarkGreen
     }
 }
 
