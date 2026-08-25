@@ -32,7 +32,28 @@ function Sync-ConfigDirectory {
         return
     }
 
-    Copy-Item -Path (Join-Path $Source '*') -Destination $Destination -Recurse -Force
+    $allFiles = Get-ChildItem -Path $Source -Recurse -File
+    foreach ($file in $allFiles) {
+        $relPath = $file.FullName.Substring($Source.Length).TrimStart('\', '/')
+        $destFile = Join-Path $Destination $relPath
+        $destDir = Split-Path -Parent $destFile
+        Ensure-Directory -Path $destDir
+
+        # Skip copy if file already exists and is identical (avoids locked memory-mapped font collisions)
+        if (Test-Path $destFile) {
+            $destItem = Get-Item $destFile
+            if ($destItem.Length -eq $file.Length) {
+                continue
+            }
+        }
+
+        try {
+            Copy-Item -Path $file.FullName -Destination $destFile -Force -ErrorAction Stop
+        } catch {
+            # File may be locked by a running process (e.g. memory-mapped font in Rainmeter)
+            Write-Host "  [=] Skipped locked file: $relPath" -ForegroundColor DarkGray
+        }
+    }
     Write-Host "$Description synced to: $Destination" -ForegroundColor Green
 }
 
