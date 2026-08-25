@@ -57,7 +57,13 @@ function Ensure-ScoopPackages {
     foreach ($pkg in $Packages) {
         $normalized = ($pkg -split '/')[-1]
         if ($installedSet.Contains($pkg) -or $installedSet.Contains($normalized)) {
-            Write-Host "Already installed: $pkg" -ForegroundColor DarkGreen
+            Write-Host "Already installed (Scoop): $pkg" -ForegroundColor DarkGreen
+            continue
+        }
+
+        # Skip if already available on PATH / Windows system
+        if (Get-Command $normalized -ErrorAction SilentlyContinue) {
+            Write-Host "Already available on system: $pkg (skipping Scoop install)" -ForegroundColor DarkGreen
             continue
         }
 
@@ -292,7 +298,6 @@ $categoryCoreTools = @(
     'ngrok',
     'procs',
     'rclone',
-    'extras/rainmeter',
     'ripgrep',
     'scoop-search',
     'sed',
@@ -310,7 +315,6 @@ $categoryCoreTools = @(
     'vhs',
     'watchexec',
     'wget',
-    'extras/windhawk',
     'whois',
     'xh',
     'yazi',

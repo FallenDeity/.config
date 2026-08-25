@@ -78,7 +78,11 @@
         },
         {
           "PackageIdentifier": "Rainmeter.Rainmeter",
-          "Version": "4.5.23"
+          "Version": "4.5.26"
+        },
+        {
+          "PackageIdentifier": "RamenSoftware.Windhawk",
+          "Version": "1.7.3"
         },
         {
           "PackageIdentifier": "Valve.Steam",
