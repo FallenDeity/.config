@@ -245,10 +245,23 @@
         const currentMedia = output.media?.currentSession;
         const processInfo = getProcessInfo(output.glazewm?.focusedContainer?.processName);
 
-        const isFullscreen = output.glazewm?.hasFullscreenWindow ||
-          output.glazewm?.focusedContainer?.state?.type === 'fullscreen' ||
-          output.glazewm?.focusedWorkspace?.children?.some(c => c.state?.type === 'fullscreen') ||
-          output.glazewm?.currentWorkspaces?.some(ws => ws.children?.some(c => c.state?.type === 'fullscreen'));
+        function hasFullscreenChild(container) {
+          if (!container) return false;
+          if (container.state?.type === 'fullscreen' || container.state === 'fullscreen') return true;
+          if (Array.isArray(container.children)) {
+            return container.children.some(hasFullscreenChild);
+          }
+          return false;
+        }
+
+        // Check if the CURRENT visible workspace has a fullscreen window (do not check background workspaces)
+        const currentWs = output.glazewm?.currentWorkspaces?.find(ws => ws.hasFocus || ws.isDisplayed)
+          || output.glazewm?.focusedWorkspace;
+
+        const isFullscreen = Boolean(
+          hasFullscreenChild(currentWs) ||
+          (output.glazewm?.focusedContainer?.state?.type === 'fullscreen' && (!currentWs || currentWs?.name === output.glazewm?.focusedWorkspace?.name))
+        );
 
         if (isFullscreen) {
           return <div className="app fullscreen-hidden"></div>;

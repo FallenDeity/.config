@@ -189,15 +189,27 @@ function Install-WallpaperWatcherStartup {
 
 function Install-FilesAppConfig {
     Write-Host "`n==> Setting up Files App config" -ForegroundColor Cyan
+    $repoFilesDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'files'
+    $synced = $false
+
+    # 1. Store / MSIX Packaged location
     $pkg = (Get-AppxPackage -Name '*Files*' -ErrorAction SilentlyContinue | Select-Object -First 1)?.PackageFamilyName
-    if (-not $pkg) {
-        Write-Host 'Files App package not found; skipping settings sync.' -ForegroundColor DarkGreen
-        return
+    if ($pkg) {
+        $targetDir = Join-Path $env:LOCALAPPDATA "Packages\$pkg\LocalState\settings"
+        Sync-ConfigDirectory -Source $repoFilesDir -Destination $targetDir -Description 'Files App (Packaged) config'
+        $synced = $true
     }
 
-    $repoFilesDir = Join-Path (Split-Path -Parent $ScriptsRoot) 'files'
-    $targetDir = Join-Path $env:LOCALAPPDATA "Packages\$pkg\LocalState\settings"
-    Sync-ConfigDirectory -Source $repoFilesDir -Destination $targetDir -Description 'Files App config'
+    # 2. Unpackaged / Standalone location (if present)
+    if (Test-Path (Join-Path $env:LOCALAPPDATA 'Files')) {
+        $standaloneDir = Join-Path $env:LOCALAPPDATA 'Files\settings'
+        Sync-ConfigDirectory -Source $repoFilesDir -Destination $standaloneDir -Description 'Files App (Standalone) config'
+        $synced = $true
+    }
+
+    if (-not $synced) {
+        Write-Host 'Files App package not found; skipping settings sync.' -ForegroundColor DarkGreen
+    }
 }
 
 function Install-GlzrScripts {

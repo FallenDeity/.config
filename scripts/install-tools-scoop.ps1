@@ -295,6 +295,7 @@ $categoryCoreTools = @(
     'ripgrep',
     'scoop-search',
     'sed',
+    'spicetify-cli',
     'sysinternals/autoruns',
     'sysinternals/psexec',
     'sysinternals/psshutdown',

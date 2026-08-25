@@ -1,5 +1,6 @@
 param(
-    [string]$ScriptsRoot
+    [string]$ScriptsRoot,
+    [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
@@ -75,29 +76,53 @@ foreach ($Profile in $Profiles) {
         }
     }
 
-    # 1. Sync / Symlink chrome directory
+    # 1. Sync chrome directory (only copy files if missing, unless -Force)
     $SourceChrome = Join-Path $ZenConfigDir "chrome"
     $DestChrome = Join-Path $ProfilePath "chrome"
     if (Test-Path $SourceChrome) {
         Ensure-Directory -Path $DestChrome
-        Copy-Item -Path (Join-Path $SourceChrome "*") -Destination $DestChrome -Recurse -Force
-        Write-Host "  [+] Synced chrome styles to: $DestChrome" -ForegroundColor DarkGreen
+        $filesToCopy = Get-ChildItem -Path $SourceChrome -Recurse -File
+        $copiedCount = 0
+        foreach ($file in $filesToCopy) {
+            $rel = $file.FullName.Substring($SourceChrome.Length).TrimStart('\', '/')
+            $destFilePath = Join-Path $DestChrome $rel
+            $destFileDir = Split-Path -Parent $destFilePath
+            Ensure-Directory -Path $destFileDir
+
+            if (-not (Test-Path $destFilePath) -or $Force) {
+                Copy-Item -Path $file.FullName -Destination $destFilePath -Force
+                $copiedCount++
+            }
+        }
+        if ($copiedCount -gt 0) {
+            Write-Host "  [+] Synced $copiedCount chrome files to: $DestChrome" -ForegroundColor DarkGreen
+        } else {
+            Write-Host "  [=] Chrome files already exist; skipping overwrite (use -Force to override)." -ForegroundColor DarkGray
+        }
     }
 
-    # 2. Sync zen-themes.json
+    # 2. Sync zen-themes.json (only if missing, unless -Force)
     $SourceThemes = Join-Path $ZenConfigDir "zen-themes.json"
     $DestThemes = Join-Path $ProfilePath "zen-themes.json"
     if (Test-Path $SourceThemes) {
-        Copy-Item -Path $SourceThemes -Destination $DestThemes -Force
-        Write-Host "  [+] Synced zen-themes.json to: $DestThemes" -ForegroundColor DarkGreen
+        if (-not (Test-Path $DestThemes) -or $Force) {
+            Copy-Item -Path $SourceThemes -Destination $DestThemes -Force
+            Write-Host "  [+] Synced zen-themes.json to: $DestThemes" -ForegroundColor DarkGreen
+        } else {
+            Write-Host "  [=] zen-themes.json already exists; skipping overwrite." -ForegroundColor DarkGray
+        }
     }
 
-    # 3. Sync user.js
+    # 3. Sync user.js (only if missing, unless -Force)
     $SourceUserJs = Join-Path $ZenConfigDir "user.js"
     $DestUserJs = Join-Path $ProfilePath "user.js"
     if (Test-Path $SourceUserJs) {
-        Copy-Item -Path $SourceUserJs -Destination $DestUserJs -Force
-        Write-Host "  [+] Synced user.js (preferences) to: $DestUserJs" -ForegroundColor DarkGreen
+        if (-not (Test-Path $DestUserJs) -or $Force) {
+            Copy-Item -Path $SourceUserJs -Destination $DestUserJs -Force
+            Write-Host "  [+] Synced user.js (preferences) to: $DestUserJs" -ForegroundColor DarkGreen
+        } else {
+            Write-Host "  [=] user.js already exists; skipping overwrite." -ForegroundColor DarkGray
+        }
     }
 }
 

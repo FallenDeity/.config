@@ -1,0 +1,24 @@
+{
+  "FileTagList": [
+    {
+      "TagName": "Home",
+      "ColorString": "#0072BD",
+      "Uid": "f7e0e137-2eb5-4fa4-a50d-ddd65df17c34"
+    },
+    {
+      "TagName": "Work",
+      "ColorString": "#D95319",
+      "Uid": "c84a8131-c4de-47d9-9440-26e859d14b3d"
+    },
+    {
+      "TagName": "Photos",
+      "ColorString": "#EDB120",
+      "Uid": "d4b8d4bd-ceaf-4e58-ac61-a185fcf96c5d"
+    },
+    {
+      "TagName": "Important",
+      "ColorString": "#77AC30",
+      "Uid": "79376daf-c44a-4fe4-aa3b-8b30baea453e"
+    }
+  ]
+}

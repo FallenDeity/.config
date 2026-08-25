@@ -1,5 +1,6 @@
 param(
-    [switch]$ConfigOnly
+    [switch]$ConfigOnly,
+    [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
@@ -505,10 +506,19 @@ else {
 # Zen Browser configuration setup
 $zenConfigScript = Join-Path $ScriptsRoot 'helpers\install-zen-config.ps1'
 if (Test-Path $zenConfigScript) {
-    & $zenConfigScript -ScriptsRoot $ScriptsRoot
+    & $zenConfigScript -ScriptsRoot $ScriptsRoot -Force:$Force
 }
 else {
     Write-Host "Zen config installer script not found: $zenConfigScript" -ForegroundColor Yellow
+}
+
+# Spicetify configuration setup
+$spicetifyConfigScript = Join-Path $ScriptsRoot 'helpers\install-spicetify-config.ps1'
+if (Test-Path $spicetifyConfigScript) {
+    & $spicetifyConfigScript -ScriptsRoot $ScriptsRoot
+}
+else {
+    Write-Host "Spicetify config installer script not found: $spicetifyConfigScript" -ForegroundColor Yellow
 }
 
 Write-Step 'Setting up git config'
