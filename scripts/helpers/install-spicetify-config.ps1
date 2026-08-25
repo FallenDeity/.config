@@ -85,9 +85,9 @@ if ($spotifyProcess) {
     try {
         $backupDir = "$env:APPDATA\spicetify\Backup"
         if (Test-Path $backupDir) {
-            & $spicetifyExe apply
+            & $spicetifyExe -n apply
         } else {
-            & $spicetifyExe backup apply
+            & $spicetifyExe -n backup apply
         }
         Write-Host "  [+] Spicetify configuration applied successfully." -ForegroundColor Green
     } catch {
