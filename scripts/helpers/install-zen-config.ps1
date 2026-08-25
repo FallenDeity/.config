@@ -91,7 +91,9 @@ foreach ($Profile in $Profiles) {
     if (Test-Path $SourceExts) {
         Ensure-Directory -Path $DestExts
         Copy-Item -Path (Join-Path $SourceExts "*.xpi") -Destination $DestExts -Force
-        Write-Host "  [+] Synced browser extensions to: $DestExts" -ForegroundColor DarkGreen
+        # Clear startup cache to force Zen to re-index and install synced .xpi extensions
+        Remove-Item -Path (Join-Path $ProfilePath "addonStartup.json.lz4") -Force -ErrorAction SilentlyContinue
+        Write-Host "  [+] Synced browser extensions & invalidated addon cache: $DestExts" -ForegroundColor DarkGreen
     }
 }
 
