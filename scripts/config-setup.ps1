@@ -404,6 +404,13 @@ if (Test-Path $repoTrippyDir) {
     Sync-ConfigDirectory -Source $repoTrippyDir -Destination $homeTrippyDir -Description 'Trippy config'
 }
 
+# Cava config sync
+$repoCavaDir = Join-Path $repoConfigRoot 'cava'
+$homeCavaDir = Join-Path $HOME '.config\cava'
+if (Test-Path $repoCavaDir) {
+    Sync-ConfigDirectory -Source $repoCavaDir -Destination $homeCavaDir -Description 'Cava config'
+}
+
 # Set environment variables from repo config files
 [Environment]::SetEnvironmentVariable('DFT_THEME', 'dark', 'User')
 $env:DFT_THEME = 'dark'

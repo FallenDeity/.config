@@ -1,0 +1,34 @@
+## Cava Audio Visualizer Configuration (Catppuccin Mocha themed)
+
+[general]
+framerate = 60
+autosens = 1
+bars = 0
+bar_width = 2
+bar_spacing = 1
+
+## [input]
+## On Windows, WASAPI loopback is used automatically by default.
+# method = wasapi
+# source = loopback
+
+[output]
+method = noncurses
+channels = stereo
+mono_option = average
+
+[color]
+gradient = 1
+gradient_count = 6
+gradient_color_1 = '#89b4fa'
+gradient_color_2 = '#b4befe'
+gradient_color_3 = '#cba6f7'
+gradient_color_4 = '#f38ba8'
+gradient_color_5 = '#fab387'
+gradient_color_6 = '#f9e2af'
+
+[smoothing]
+integral = 75
+monstercat = 1
+waves = 0
+gravity = 100

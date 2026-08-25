@@ -255,6 +255,10 @@
         {
           "PackageIdentifier": "FilesCommunity.Files",
           "Version": "4.2.0.0"
+        },
+        {
+          "PackageIdentifier": "karlstav.cava",
+          "Version": "1.0.0"
         }
       ],
       "SourceDetails": {
