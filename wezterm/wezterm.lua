@@ -9,6 +9,7 @@ config.default_prog = { 'pwsh.exe', '-NoLogo' }
 config.default_cwd = wezterm.home_dir
 config.set_environment_variables = {
   TERM = 'xterm-256color',
+  TERM_PROGRAM = 'WezTerm',
 }
 
 -- Launcher Profiles (Accessible via F1 or Ctrl+Shift+L)

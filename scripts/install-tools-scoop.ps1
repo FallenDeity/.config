@@ -244,6 +244,12 @@ function Ensure-CargoAndTools {
 
 Ensure-ScoopInstalled
 
+if (Test-Path 'C:\Program Files\Git\usr\bin\file.exe') {
+    if (-not (Test-Path "$env:USERPROFILE\scoop\shims\file.exe")) {
+        scoop shim add file 'C:\Program Files\Git\usr\bin\file.exe'
+    }
+}
+
 Write-Step 'Updating Scoop and bucket manifests'
 scoop update
 
@@ -274,7 +280,6 @@ $categoryCoreTools = @(
     'fastfetch',
     'fd',
     'ffmpeg',
-    'file',
     'findutils',
     'fzf',
     'fx',

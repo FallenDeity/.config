@@ -10,6 +10,10 @@ title_format = "Yazi: {cwd}"
 [preview]
 tab_size = 4
 wrap = "yes"
+max_width = 1000
+max_height = 1000
+image_filter = "triangle"
+image_quality = 75
 
 [opener]
 edit = [
