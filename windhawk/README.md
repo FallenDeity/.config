@@ -30,6 +30,12 @@ controlStyles:
     styles:
       - Padding=0,0,-8,0
       - Margin=0,4,0,4
+  - target: SystemTray.ChevronIconView
+    styles:
+      - Margin=0,4,0,4
+      - Padding=0
+      - CornerRadius=8
+      - MinWidth=32
 themeResourceVariables:
   - ''
 clickThroughTaskbar: 0

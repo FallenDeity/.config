@@ -66,6 +66,7 @@ body {
 }
 
 .center-island-body {
+  position: relative;
   background: var(--theme-bg-notch);
   height: 36px;
   display: flex;
@@ -73,75 +74,134 @@ body {
   gap: 12px;
   padding: 0 10px;
   border-bottom: none;
+  overflow: hidden;
 }
 
 .center-item {
+  position: relative;
   display: flex;
   align-items: center;
   font-size: 12px;
   font-weight: 600;
+  z-index: 2;
 }
 
 .center-divider {
+  position: relative;
   width: 1px;
   height: 14px;
   background: rgba(255, 255, 255, 0.15);
+  z-index: 2;
 }
 
-.clock-icon { color: var(--theme-text-muted); margin-right: 6px; font-size: 13px; }
-.clock-text { color: var(--theme-text); }
-.weather-text { color: var(--theme-text-muted); font-size: 12px; font-weight: 600; }
+.clock-icon { color: var(--theme-text-muted); margin-right: 6px; font-size: 13px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.clock-text { color: var(--theme-text); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.weather-text { color: var(--theme-text-muted); font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
 
 /* Center Notch Elements (Tone 2 - Secondary Accent) */
-.app-icon { color: var(--theme-accent-secondary); margin-right: 6px; font-size: 13px; }
-.app-text { color: var(--theme-accent-secondary); font-weight: 700; font-size: 12px; }
+.app-icon { color: var(--theme-accent-secondary); margin-right: 6px; font-size: 13px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.app-text { color: var(--theme-accent-secondary); font-weight: 700; font-size: 12px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
 
-/* Media Card (Tone 2 - Secondary Accent) */
+/* Media Section (Seamless Center Notch Integration with Centered Transparent -> Solid -> Transparent Gradient) */
 .media-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  max-width: 22vw;
+  gap: 8px;
+  max-width: 32vw;
+  height: 36px;
+  margin-left: -8px;
+  margin-right: -8px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  z-index: 2;
 }
 
-.media-icon {
+.media-card-bg-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(3px) saturate(1.4) brightness(0.7);
+  opacity: 0.45;
+  z-index: 0;
+  pointer-events: none;
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.8) 15%, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.8) 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.8) 15%, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.8) 85%, transparent 100%);
+}
+
+.media-icon-svg {
   color: var(--theme-accent-secondary);
-  font-size: 13px;
-  animation: pulse 2s infinite ease-in-out;
+  z-index: 2;
+  flex-shrink: 0;
+  animation: pulse 2.5s infinite ease-in-out;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.1); }
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
 }
 
 .media-title {
-  max-width: 14vw;
+  max-width: 15vw;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 11px;
   font-weight: 600;
-  color: var(--theme-text);
+  color: #ffffff;
+  z-index: 2;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.9);
 }
 
 .media-buttons {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  z-index: 2;
 }
 
 .media-btn {
   background: transparent;
   border: none;
-  color: var(--theme-text-muted);
+  color: var(--theme-accent-primary);
   cursor: pointer;
   padding: 2px 4px;
   border-radius: 4px;
-  transition: 0.2s;
-  font-size: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
-.media-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--theme-accent-secondary); }
+
+.media-btn svg {
+  stroke: var(--theme-accent-primary);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  transition: all 0.2s ease;
+}
+
+.media-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.15);
+}
+
+.media-btn:hover svg {
+  stroke: #ffffff;
+  filter: drop-shadow(0 0 6px var(--theme-accent-primary));
+}
+
+.media-btn:active {
+  transform: scale(0.95);
+}
 
 /* Left WM / Distro (Tone 1 - Primary Accent) */
 .theme-reroll-btn {
