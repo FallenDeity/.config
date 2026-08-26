@@ -19,8 +19,8 @@ config.launch_menu = {
     args = { 'pwsh.exe', '-NoLogo' },
   },
   {
-    label = 'WSL: Ubuntu-24.04',
-    args = { 'wsl.exe', '-d', 'Ubuntu-24.04' },
+    label = 'WSL (Default)',
+    args = { 'wsl.exe' },
   },
   {
     label = 'Command Prompt (cmd)',
