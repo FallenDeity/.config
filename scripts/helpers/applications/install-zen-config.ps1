@@ -19,7 +19,7 @@ function Ensure-Directory {
 
 Write-Step "Configuring Zen Browser"
 
-$RepoRoot = if ($ScriptsRoot) { Split-Path -Parent $ScriptsRoot } else { Split-Path -Parent (Split-Path -Parent $PSCommandPath) }
+$RepoRoot = if ($ScriptsRoot) { Split-Path -Parent $ScriptsRoot } else { Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSCommandPath)) }
 $ZenConfigDir = Join-Path $RepoRoot "zen"
 
 if (-not (Test-Path $ZenConfigDir)) {
@@ -106,7 +106,10 @@ foreach ($Profile in $Profiles) {
     $DestThemes = Join-Path $ProfilePath "zen-themes.json"
     if (Test-Path $SourceThemes) {
         if (-not (Test-Path $DestThemes) -or $Force) {
-            Copy-Item -Path $SourceThemes -Destination $DestThemes -Force
+            $themesContent = Get-Content -Path $SourceThemes -Raw
+            $escapedProfile = $ProfilePath.Replace('\', '\\')
+            $themesContent = $themesContent.Replace('__PROFILE_DIR__', $escapedProfile)
+            Set-Content -Path $DestThemes -Value $themesContent -Encoding UTF8
             Write-Host "  [+] Synced zen-themes.json to: $DestThemes" -ForegroundColor DarkGreen
         } else {
             Write-Host "  [=] zen-themes.json already exists; skipping overwrite." -ForegroundColor DarkGray

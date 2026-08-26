@@ -169,7 +169,7 @@ function Install-Btop4winTheme {
 
 function Sync-WallpaperTheme {
     Write-Host "`n==> Syncing theme palette from current wallpaper" -ForegroundColor Cyan
-    $syncScript = Join-Path $ScriptsRoot "helpers\sync-wallpaper-theme.py"
+    $syncScript = Join-Path $ScriptsRoot "helpers\glzr\sync-wallpaper-theme.py"
     if (Test-Path $syncScript) {
         python $syncScript
     }
@@ -235,7 +235,7 @@ function Install-FilesAppConfig {
 
 function Install-GlzrScripts {
     Write-Host "`n==> Setting up Glzr helper scripts" -ForegroundColor Cyan
-    $helpersSource = Join-Path $ScriptsRoot "helpers"
+    $helpersSource = Join-Path $ScriptsRoot "helpers\glzr"
     $targetDir = Join-Path $HOME '.glzr\scripts'
     Sync-ConfigDirectory -Source $helpersSource -Destination $targetDir -Description 'Glzr scripts'
 }
@@ -248,7 +248,10 @@ function Install-RainmeterConfig {
     $appDataRainmeter = "$env:APPDATA\Rainmeter"
     if (Test-Path "$repoRainmeterDir\Rainmeter.ini") {
         Ensure-Directory -Path $appDataRainmeter
-        Copy-Item "$repoRainmeterDir\Rainmeter.ini" "$appDataRainmeter\Rainmeter.ini" -Force
+        $rainmeterIni = Get-Content "$repoRainmeterDir\Rainmeter.ini" -Raw
+        $userSkins = "$HOME\Documents\Rainmeter\Skins\"
+        $rainmeterIni = $rainmeterIni.Replace('__RAINMETER_SKIN_PATH__', $userSkins)
+        Set-Content -Path "$appDataRainmeter\Rainmeter.ini" -Value $rainmeterIni -Encoding UTF8
     }
     if (Test-Path "$repoRainmeterDir\Layouts") {
         Sync-ConfigDirectory -Source "$repoRainmeterDir\Layouts" -Destination "$appDataRainmeter\Layouts" -Description 'Rainmeter layouts'

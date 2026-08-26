@@ -70,9 +70,9 @@
         "author": "PowerToys Style",
         "version": "1.1.0",
         "homepage": "https://github.com/matteo-tafuro/zen-better-cleaned-url-bar",
-        "style": "C:\\Users\\triya\\AppData\\Roaming\\zen\\Profiles\\lj79lb3q.Default (release)\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\chrome.css",
-        "readme": "C:\\Users\\triya\\AppData\\Roaming\\zen\\Profiles\\lj79lb3q.Default (release)\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\readme.md",
-        "preferences": "C:\\Users\\triya\\AppData\\Roaming\\zen\\Profiles\\lj79lb3q.Default (release)\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\preferences.json",
+        "style": "__PROFILE_DIR__\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\chrome.css",
+        "readme": "__PROFILE_DIR__\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\readme.md",
+        "preferences": "__PROFILE_DIR__\\chrome\\zen-themes\\zen-better-cleaned-url-bar\\preferences.json",
         "enabled": true
     },
     "4ab93b88-151c-451b-a1b7-a1e0e28fa7f8": {

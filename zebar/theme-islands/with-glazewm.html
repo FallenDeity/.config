@@ -65,7 +65,7 @@
         async function rerollTheme() {
           try {
             try {
-              await zebar.shellExec('python', 'C:\\Users\\triya\\.glzr\\scripts\\sync-wallpaper-theme.py --reroll');
+              await zebar.shellExec('cmd.exe', '/c python "%USERPROFILE%\\.glzr\\scripts\\sync-wallpaper-theme.py" --reroll');
             } catch (cmdErr) {}
 
             try {

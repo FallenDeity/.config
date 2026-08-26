@@ -34,7 +34,7 @@ if (-not $spicetifyExe) {
 Write-Host "  [=] Using Spicetify CLI: $spicetifyExe" -ForegroundColor DarkGray
 
 # 2. Sync Spicetify dotfiles configuration, themes, and extensions
-$repoRoot = if ($ScriptsRoot) { Split-Path -Parent $ScriptsRoot } else { (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) }
+$repoRoot = if ($ScriptsRoot) { Split-Path -Parent $ScriptsRoot } else { (Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))) }
 $repoSpicetifyDir = Join-Path $repoRoot 'spicetify'
 $targetSpicetifyDir = "$env:APPDATA\spicetify"
 

@@ -511,7 +511,7 @@ else {
 }
 
 # Zen Browser configuration setup
-$zenConfigScript = Join-Path $ScriptsRoot 'helpers\install-zen-config.ps1'
+$zenConfigScript = Join-Path $ScriptsRoot 'helpers\applications\install-zen-config.ps1'
 if (Test-Path $zenConfigScript) {
     & $zenConfigScript -ScriptsRoot $ScriptsRoot -Force:$Force
 }
@@ -520,7 +520,7 @@ else {
 }
 
 # Spicetify configuration setup
-$spicetifyConfigScript = Join-Path $ScriptsRoot 'helpers\install-spicetify-config.ps1'
+$spicetifyConfigScript = Join-Path $ScriptsRoot 'helpers\applications\install-spicetify-config.ps1'
 if (Test-Path $spicetifyConfigScript) {
     & $spicetifyConfigScript -ScriptsRoot $ScriptsRoot
 }
@@ -554,7 +554,7 @@ if ($ConfigOnly) {
     Write-Host 'Config-only mode: skipping PowerToys plugin install.' -ForegroundColor DarkGreen
 }
 else {
-    $powerToysScript = Join-Path $ScriptsRoot 'helpers\install-powertoys.ps1'
+    $powerToysScript = Join-Path $ScriptsRoot 'helpers\applications\install-powertoys.ps1'
     if (Test-Path $powerToysScript) {
         & $powerToysScript
     }
