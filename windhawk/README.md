@@ -22,10 +22,14 @@ styleConstants:
 controlStyles:
   - target: Grid#SystemTrayFrameGrid
     styles:
-      - Padding=8,0,8,0
+      - Padding=8,0,16,0
   - target: ' Taskbar.TaskbarFrame#TaskbarFrame > Grid#RootGrid'
     styles:
       - Padding=8,0,8,0
+  - target: SystemTray.OmniButton#NotificationCenterButton
+    styles:
+      - Padding=0,0,-8,0
+      - Margin=0,4,0,4
 themeResourceVariables:
   - ''
 clickThroughTaskbar: 0
@@ -118,6 +122,9 @@ controlStyles:
   - target: QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot > ContentPresenter#PageHeader
     styles:
       - Background:=<SolidColorBrush Color="Transparent"/>
+  - target: ContentControl#PageHeaderContentControl
+    styles:
+      - Width=64
   - target: ScrollViewer#ListContent
     styles:
       - Background:=<SolidColorBrush Color="Transparent"/>
