@@ -88,11 +88,7 @@ window_rules:
       - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
         window_class: { regex: 'Chrome_WidgetWin_1|MozillaDialogClass' }
 
-      # Universal Progress & Operation dialogs (Explorer, 7-Zip, WinRAR, Installers, Updaters, etc.)
-      - window_class: { regex: 'OperationStatusWindow|ProgressDialog|MsiDialogCloseClass' }
-      - window_title: { regex: '(?i).*?%\s*(complete|done)?|Copying|Moving|Deleting|Replacing|Extracting|Compressing|Downloading|Installing|Uninstalling|Updating' }
-
-      # Windows system utilities and 3rd party tools
+      # Ignore rules for 3rd-party overlays and tools
       - window_process: { equals: 'PowerToys' }
         window_class: { regex: 'HwndWrapper\[PowerToys\.PowerAccent.*?\]' }
       - window_title: { equals: 'Command Palette' }
@@ -101,29 +97,14 @@ window_rules:
         window_title: { regex: '.*? - Peek' }
       - window_process: { equals: 'Lively' }
         window_class: { regex: 'HwndWrapper' }
-      - window_process: { equals: 'SnippingTool' }
-      - window_process: { equals: 'ScreenClippingHost' }
-      - window_process: { equals: 'Taskmgr' }
+
+      # Office background COM/Add-in windows
       - window_process: { equals: 'EXCEL' }
         window_class: { not_regex: 'XLMAIN' }
       - window_process: { equals: 'WINWORD' }
         window_class: { not_regex: 'OpusApp' }
       - window_process: { equals: 'POWERPNT' }
         window_class: { not_regex: 'PPTFrameClass' }
-      - window_process: { equals: 'Steam' }
-        window_title: { regex: 'Friends List|Special Offers|Steam Guard' }
-
-
-  # Dialogs / Settings / Alerts set to float (across all apps)
-  - commands: ['set-floating --centered']
-    match:
-      # Universal standard Win32 dialogs (Open/Save file, properties, confirmations, alert boxes)
-      - window_class: { equals: '#32770' }
-      - window_class: { regex: 'TaskDialog|Credential Dialog Xaml Host' }
-      # Windows system apps
-      - window_process: { equals: 'SystemSettings' }
-      - window_process: { equals: 'ApplicationFrameHost' }
-        window_title: { regex: 'Settings|Calculator' }
 
 binding_modes:
   # Resize mode (alt+r)
