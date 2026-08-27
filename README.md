@@ -4,7 +4,7 @@ An automated dotfiles configuration and setup orchestrator for Windows 11. It pr
 
 ## Screenshots
 
-| <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/5fc194bc-ab42-43f8-a846-5dc23332e6f5" /> | <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/8d6ab98e-1332-49d0-85e6-22d97e759b5a" /> |
+| <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/06392315-5fbb-4a29-af43-1964b9beedac" /> | <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/8d6ab98e-1332-49d0-85e6-22d97e759b5a" /> |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/24595de2-0b07-473d-a88c-24cf3362a5e5" /> | <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/d35cafaa-71b3-449c-8cba-504e7b1b2d4b" /> |
 | <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/2007f4e5-859f-456e-93af-68893dd76cfb" /> | <img width="3440" height="1440" alt="image" src="https://github.com/user-attachments/assets/15ebd5be-a2cb-446f-a4b3-5d15602f4a00" /> |
