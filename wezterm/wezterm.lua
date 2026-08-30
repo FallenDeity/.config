@@ -51,9 +51,8 @@ config.launch_menu = {
 --------------------------------------------------------------------------------
 -- 2. Window Styling (Windows 11 Rounded Corners + Clean Borderless)
 --------------------------------------------------------------------------------
-config.window_decorations = 'RESIZE'
+config.window_decorations = 'NONE'
 config.win32_system_backdrop = 'Acrylic'
-config.integrated_title_buttons = {}
 config.enable_tab_bar = false
 config.window_background_opacity = 0.75
 config.window_padding = {
