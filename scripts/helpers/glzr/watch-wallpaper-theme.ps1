@@ -54,6 +54,9 @@ foreach ($weDir in $weDirs) {
     }
 }
 
+$scriptStartTime = [DateTime]::UtcNow
+$startupGraceSeconds = 12
+
 Write-Host "Dynamic wallpaper theme watcher is active." -ForegroundColor Green
 
 while ($true) {
@@ -61,6 +64,12 @@ while ($true) {
 
     # Execute exactly once only after file writes have fully settled for 1.4s
     if ($global:pendingSync) {
+        $sinceBoot = ([DateTime]::UtcNow - $scriptStartTime).TotalSeconds
+        if ($sinceBoot -lt $startupGraceSeconds) {
+            # Let GlazeWM and Zebar finish their initial startup cleanly
+            continue
+        }
+
         $elapsed = ([DateTime]::UtcNow - $global:lastEventTime).TotalMilliseconds
         if ($elapsed -ge 1400) {
             $global:pendingSync = $false
@@ -71,7 +80,14 @@ while ($true) {
             if (Get-Command glazewm -ErrorAction SilentlyContinue) {
                 glazewm command wm-reload-config
             }
-            Stop-Process -Name zebar -Force -ErrorAction SilentlyContinue
+
+            # Restart Zebar safely: allow process and WebView2 lockfiles to cleanly release
+            $zebarProcs = Get-Process zebar -ErrorAction SilentlyContinue
+            if ($zebarProcs) {
+                $zebarProcs | Stop-Process -Force -ErrorAction SilentlyContinue
+                Start-Sleep -Milliseconds 800
+            }
+
             if (Get-Command glazewm -ErrorAction SilentlyContinue) {
                 glazewm command shell-exec zebar
             }
@@ -79,3 +95,4 @@ while ($true) {
         }
     }
 }
+
